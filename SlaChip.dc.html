@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<span style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap"><dc-import name="SlaRing" size="28" pct="{{ pct }}" state="{{ state }}" centre="" hint-size="28px,28px"></dc-import><span style="font:600 12px/16px var(--font,Inter,sans-serif);font-variant-numeric:tabular-nums;padding:2px 8px;border-radius:999px;background:{{ bg }};color:{{ fg }}">{{ text }}</span></span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:160,&quot;height&quot;:32},&quot;ticket&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;}}">
+class Component extends DCLogic {
+  state = { m: null, tick: 0 };
+  componentDidMount() { import('./store.js').then((m) => this.setState({ m })); this.iv = setInterval(() => this.setState((s) => ({ tick: s.tick + 1 })), 1000); }
+  componentWillUnmount() { clearInterval(this.iv); }
+  renderVals() {
+    const { m } = this.state, t = this.props.ticket;
+    if (!m || !t) return { pct: 100, state: 'ok', bg: '#F1F5F9', fg: '#475569', text: '' };
+    const v = m.slaView(t), c = m.slaClocks(t).active;
+    const C = { ok: ['#DCFCE7', '#15803D'], risk: ['#FFEDD5', '#C2410C'], breached: ['#FEE2E2', '#B91C1C'], paused: ['#F1F5F9', '#475569'], done: ['#F1F5F9', '#15803D'] }[v.state];
+    const text = v.state === 'done' ? 'Resolved' : v.state === 'paused' ? 'Paused' : m.fmtClock(c.left);
+    return { pct: v.pct, state: v.state, bg: C[0], fg: C[1], text };
+  }
+}
+</script>
+</body>
+</html>

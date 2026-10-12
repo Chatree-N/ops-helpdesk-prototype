@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdSlide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}@keyframes mdFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}</style></helmet>
+<div style="position:relative;display:flex;height:100%;min-height:0;background:#F8FAFC;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A;overflow:hidden">
+  <div style="width:224px;flex:none;padding:24px 8px 24px 24px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box">
+    <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;padding:0 12px 8px">CATEGORIES</div>
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.go }}" style="display:flex;align-items:center;gap:8px;text-align:left;border:0;border-radius:10px;padding:0 12px;height:36px;cursor:pointer;font:{{ c.fw }} 14px/20px var(--font);background:{{ c.bg }};color:{{ c.fg }}" style-hover="{{ c.hover }}"><span style="display:inline-flex;flex:none"><dc-import name="Icon" icon="{{ c.icon }}" size="16" hint-size="16px,16px"></dc-import></span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</span><span style="font:500 12px/16px var(--font);font-variant-numeric:tabular-nums">{{ c.count }}</span></button></sc-for>
+  </div>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:24px 24px 0 8px;box-sizing:border-box;min-height:0">
+    <div><div style="font:600 20px/28px var(--font)">Knowledge Base</div><div style="font:400 14px/20px var(--font);color:#64748B">Answers for agents and for the customer Help Center.</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;flex:none">
+      <sc-for list="{{ stats }}" as="k" hint-placeholder-count="3"><div style="background:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 1px 2px rgba(15,18,32,.05)"><div style="font:500 12px/16px var(--font);color:#64748B">{{ k.label }}</div><div style="font:600 24px/32px var(--font);font-variant-numeric:tabular-nums">{{ k.value }}</div></div></sc-for>
+    </div>
+    <div style="display:flex;gap:4px;flex:none"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.go }}" style="height:32px;padding:0 12px;border:0;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:6px;font:500 13px/20px var(--font);background:{{ t.bg }};color:{{ t.fg }}" style-hover="{{ t.hover }}">{{ t.label }}<span style="font-size:12px;font-variant-numeric:tabular-nums">{{ t.count }}</span></button></sc-for></div>
+    <div style="flex:1;min-height:0;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 1px 2px rgba(15,18,32,.05)">
+      <div style="min-width:860px">
+        <div style="display:grid;grid-template-columns:minmax(260px,1fr) 150px 96px 84px 96px 64px 72px;gap:12px;align-items:center;padding:0 16px;height:40px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;position:sticky;top:0;background:#fff;z-index:1"><span>ARTICLE</span><span>CATEGORY</span><span>STATUS</span><span>AUDIENCE</span><span>UPDATED</span><span>VIEWS</span><span>HELPFUL</span></div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+          <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:minmax(260px,1fr) 150px 96px 84px 96px 64px 72px;gap:12px;align-items:center;padding:0 16px;height:56px;box-sizing:border-box;border-top:1px solid #F1F5F9;cursor:pointer;background:{{ r.bg }};box-shadow:{{ r.bar }}" style-hover="background:#F8FAFC">
+            <span style="min-width:0"><span style="display:block;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span><span style="display:block;font:400 12px/16px var(--font);color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.summary }}</span></span>
+            <span style="display:inline-flex"><dc-import name="Pill" kind="tone" value="slate" label="{{ r.cat }}" hint-size="120px,20px"></dc-import></span>
+            <span style="display:inline-flex"><dc-import name="Pill" kind="tone" value="{{ r.stTone }}" label="{{ r.status }}" hint-size="70px,20px"></dc-import></span>
+            <span style="display:inline-flex"><dc-import name="Pill" kind="tone" value="{{ r.auTone }}" label="{{ r.audience }}" hint-size="64px,20px"></dc-import></span>
+            <span style="font:400 13px/20px var(--font);color:#475569;white-space:nowrap">{{ r.updated }}</span>
+            <span style="font:500 13px/20px var(--font);color:#475569;font-variant-numeric:tabular-nums">{{ r.views }}</span>
+            <span style="font:500 13px/20px var(--font);color:#475569;font-variant-numeric:tabular-nums">{{ r.helpful }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}"><div style="padding:56px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><div style="width:48px;height:48px;border-radius:14px;background:#EDE9FE;color:#7C3AED;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="book" size="24" hint-size="24px,24px"></dc-import></div><div style="font:600 16px/24px var(--font)">No articles match these filters</div><button onClick="{{ clear }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Clear filters</button></div></sc-if>
+      </div>
+    </div>
+    <div style="height:16px;flex:none"></div>
+  </div>
+  <sc-if value="{{ panel }}" hint-placeholder-val="{{ false }}">
+    <aside style="position:absolute;top:0;right:0;bottom:0;width:420px;z-index:25;background:#fff;border-left:1px solid #E2E8F0;box-shadow:0 8px 32px rgba(15,18,32,.12);display:flex;flex-direction:column;animation:mdSlide 200ms ease">
+      <div style="padding:16px 24px 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#64748B">{{ p.id }}</span><dc-import name="Pill" kind="tone" value="{{ p.stTone }}" label="{{ p.status }}" hint-size="70px,20px"></dc-import><dc-import name="Pill" kind="tone" value="{{ p.auTone }}" label="{{ p.audience }}" hint-size="64px,20px"></dc-import><button onClick="{{ closePanel }}" aria-label="Close" style="margin-left:auto;width:32px;height:32px;border:0;background:none;color:#64748B;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center" style-hover="background:#F1F5F9"><dc-import name="Icon" icon="x" size="18" hint-size="18px,18px"></dc-import></button></div>
+        <div style="font:600 18px/24px var(--font);text-wrap:pretty">{{ p.title }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ p.cat }} · {{ p.meta }}</div></div>
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 24px 16px;display:flex;flex-direction:column;gap:12px">
+        <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">PREVIEW</div>
+        <div style="font:400 14px/20px var(--font);color:#334155;text-wrap:pretty">{{ p.summary }}</div>
+        <sc-for list="{{ p.blocks }}" as="b" hint-placeholder-count="2"><div style="font:400 14px/20px var(--font);color:#475569;white-space:pre-line;text-wrap:pretty">{{ b.text }}</div></sc-for>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ p.tags }}" as="g" hint-placeholder-count="3"><span style="background:#F1F5F9;color:#475569;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">{{ g }}</span></sc-for></div>
+      </div>
+      <div style="border-top:1px solid #E2E8F0;padding:12px 24px;display:flex;justify-content:flex-end;gap:8px"><span title="{{ editTip }}" style="display:inline-flex"><button onClick="{{ editP }}" disabled="{{ locked }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Edit</button></span><button onClick="{{ fullP }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Open full page</button></div>
+    </aside>
+  </sc-if>
+  <sc-if value="{{ editorOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeEditor }}" style="position:absolute;inset:0;background:rgba(15,23,42,.35);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box">
+      <div onClick="{{ stop }}" style="width:min(640px,100%);max-height:100%;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,.3);padding:24px;display:flex;flex-direction:column;gap:12px;animation:mdFade 200ms ease">
+        <div style="font:600 20px/28px var(--font)">{{ editorTitle }}</div>
+        <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Title<input aria-label="Title" value="{{ f.title }}" onChange="{{ setTitle }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0"></label>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><sc-for list="{{ selects }}" as="x" hint-placeholder-count="2"><label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">{{ x.label }}<select aria-label="{{ x.label }}" onChange="{{ x.change }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 6px;font:500 13px/20px var(--font);outline:0;background:#fff"><sc-for list="{{ x.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></label></sc-for></div>
+        <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Summary<input aria-label="Summary" value="{{ f.summary }}" onChange="{{ setSummary }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0"></label>
+        <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 12px/16px var(--font);color:#64748B">Body</span>
+          <div style="display:flex;gap:4px"><sc-for list="{{ toolbar }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.go }}" style="height:32px;padding:0 12px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;color:#475569;font:600 12px/16px var(--font);cursor:pointer" style-hover="background:#F8FAFC">{{ b.label }}</button></sc-for></div>
+          <textarea aria-label="Body" value="{{ f.bodyText }}" onChange="{{ setBody }}" placeholder="Separate paragraphs with a blank line. Start lines with 1. 2. 3. for numbered steps." style="height:140px;resize:vertical;border:1px solid #E2E8F0;border-radius:12px;padding:10px;font:400 14px/20px var(--font);outline:0"></textarea></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 12px/16px var(--font);color:#64748B">Tags</span><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><sc-for list="{{ f.tags }}" as="g" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:2px;background:#F1F5F9;color:#475569;border-radius:999px;padding:2px 4px 2px 10px;font:600 12px/16px var(--font)">{{ g.label }}<button onClick="{{ g.remove }}" aria-label="Remove tag" style="width:20px;height:20px;border:0;background:none;color:#64748B;cursor:pointer;border-radius:50%">×</button></span></sc-for><input aria-label="Add tag" value="{{ f.tagInput }}" onChange="{{ setTagInput }}" onKeyDown="{{ tagKey }}" placeholder="+ tag" style="width:90px;height:32px;border:1px dashed #CBD5E1;border-radius:999px;padding:0 10px;font:400 13px/20px var(--font);outline:0"></div></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px"><button onClick="{{ closeEditor }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Cancel</button><button onClick="{{ saveDraft }}" style="height:36px;padding:0 16px;border:1px solid #DDD6FE;border-radius:10px;background:#F5F3FF;color:#6D28D9;font:600 14px/20px var(--font);cursor:pointer">Save draft</button><button onClick="{{ publish }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Publish</button></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/20px var(--font);white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="12" stroke="2.5" hint-size="12px,12px"></dc-import></span>{{ toastText }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, cat: 'all', tab: 'All', f: null, edId: undefined };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => { this.setState({ s }); this.sync(s, m); }); this.setState({ m, s: m.store.get() }); this.sync(m.store.get(), m); }); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  sync(s, m) {
+    if (s.kbEditor && this.edKey !== (s.kbEditor.id || 'new')) { this.edKey = s.kbEditor.id || 'new'; const a = s.kbEditor.id && s.kb.articles.find((x) => x.id === s.kbEditor.id);
+      this.setState({ f: a ? { id: a.id, title: a.title, categoryId: a.categoryId, audience: a.audience, summary: a.summary, bodyText: a.body.map((b) => (b.t === 'ol' ? b.x.map((l, i) => (i + 1) + '. ' + l).join('\n') : b.x)).join('\n\n'), tags: [...a.tags], tagInput: '' } : { id: null, title: '', categoryId: s.kb.categories[0].id, audience: 'Public', summary: '', bodyText: '', tags: [], tagInput: '' } }); }
+    if (!s.kbEditor) this.edKey = null;
+  }
+  renderVals() {
+    const { m, s, cat, tab, f } = this.state, nop = () => {};
+    const blank = { cats: [], stats: [], tabs: [], rows: [], empty: false, clear: nop, panel: false, p: { id: '', status: '', stTone: 'slate', audience: '', auTone: 'slate', title: '', cat: '', meta: '', summary: '', blocks: [], tags: [] }, closePanel: nop, editP: nop, fullP: nop, locked: false, editTip: '', cursor: 'pointer', op: 1, editorOpen: false, closeEditor: nop, stop: nop, editorTitle: '', f: { title: '', summary: '', bodyText: '', tags: [], tagInput: '' }, setTitle: nop, setSummary: nop, setBody: nop, selects: [], toolbar: [], setTagInput: nop, tagKey: nop, saveDraft: nop, publish: nop, toast: false, toastText: '' };
+    if (!m || !s) return blank;
+    const st = m.store, locked = s.role !== 'Team Lead', q = s.query, K = s.kb;
+    const inCat = (a) => cat === 'all' || a.categoryId === cat;
+    const base = K.articles.filter((a) => m.kbMatch(a, q));
+    const rowsList = m.kbList(s, { categoryId: cat, tab, q }).sort((a, b) => b.updatedAt - a.updatedAt);
+    const tabDef = { All: () => true, Published: (a) => a.status === 'Published', Draft: (a) => a.status === 'Draft', Internal: (a) => a.audience === 'Internal' };
+    const catName = (id) => (K.categories.find((c) => c.id === id) || { name: '' }).name;
+    const sel = (on) => ({ bg: on ? '#F5F3FF' : 'transparent', fg: on ? '#6D28D9' : '#475569', fw: on ? '600' : '500', hover: on ? 'background:#EDE9FE' : 'background:#F1F5F9' });
+    const stats = m.kbStats(s), pid = s.kbPanelId, pa = pid && K.articles.find((a) => a.id === pid);
+    const stTone = (a) => (a.status === 'Published' ? 'green' : 'amber'), auTone = (a) => (a.audience === 'Public' ? 'blue' : 'violet');
+    const set = (k) => (e) => this.setState({ f: { ...f, [k]: e.target.value } });
+    const pc = (a) => { const v = m.kbHelpfulPct(a); return v == null ? '—' : v + '%'; };
+    const edOpen = !!s.kbEditor && !!f;
+    const dis = { locked, editTip: locked ? 'Team Lead only' : '', cursor: locked ? 'not-allowed' : 'pointer', op: locked ? 0.5 : 1 };
+    const submit = (pub) => () => { if (!f.title.trim() || !f.summary.trim()) return st.toast('Add a title and a summary'); st.kbSave(f, pub); };
+    return { ...blank, ...dis,
+      cats: [{ id: 'all', name: 'All categories', icon: 'book', n: base.filter((a) => tabDef[tab](a)).length }, ...K.categories.map((c) => ({ id: c.id, name: c.name, icon: c.icon, n: base.filter((a) => a.categoryId === c.id && tabDef[tab](a)).length }))].map((c) => ({ ...c, count: c.n, ...sel(cat === c.id), go: () => this.setState({ cat: c.id }) })),
+      stats: [['Published articles', stats.published], ['Total views', stats.views.toLocaleString('en-US')], ['Helpful rate', stats.helpful == null ? '—' : stats.helpful + '%']].map(([label, value]) => ({ label, value })),
+      tabs: ['All', 'Published', 'Draft', 'Internal'].map((t) => ({ label: t, count: base.filter((a) => inCat(a) && tabDef[t](a)).length, go: () => this.setState({ tab: t }), bg: tab === t ? '#7C3AED' : 'transparent', fg: tab === t ? '#fff' : '#475569', hover: tab === t ? 'background:#6D28D9' : 'background:#F1F5F9' })),
+      rows: rowsList.map((a) => ({ title: a.title, summary: a.summary, cat: catName(a.categoryId), status: a.status, stTone: stTone(a), audience: a.audience, auTone: auTone(a), updated: m.fmtStamp(a.updatedAt).split(' · ')[0], views: a.views.toLocaleString('en-US'), helpful: pc(a), bg: pid === a.id ? '#F5F3FF' : '#fff', bar: pid === a.id ? 'inset 3px 0 0 #7C3AED' : 'none', open: () => st.kbPanel(pid === a.id ? null : a.id) })),
+      empty: rowsList.length === 0, clear: () => { this.setState({ cat: 'all', tab: 'All' }); st.setQuery(''); },
+      panel: !!pa, closePanel: () => st.kbPanel(null),
+      p: pa ? { id: pa.id, status: pa.status, stTone: stTone(pa), audience: pa.audience, auTone: auTone(pa), title: pa.title, cat: catName(pa.categoryId), meta: 'Updated ' + m.fmtStamp(pa.updatedAt) + ' · ' + pa.views + ' views · ' + pc(pa) + ' helpful', summary: pa.summary, blocks: pa.body.slice(0, 3).map((b) => ({ text: b.t === 'ol' ? b.x.map((l, i) => (i + 1) + '. ' + l).join('\n') : b.x })), tags: pa.tags } : blank.p,
+      editP: () => { if (!locked && pa) st.kbEdit(pa.id); }, fullP: () => pa && st.openArticle(pa.id),
+      editorOpen: edOpen, closeEditor: () => st.kbEditClose(), stop: (e) => e.stopPropagation(), editorTitle: f && f.id ? 'Edit article' : 'New article',
+      f: f ? { ...f, tags: f.tags.map((label) => ({ label, remove: () => this.setState({ f: { ...f, tags: f.tags.filter((x) => x !== label) } }) })) } : blank.f, setTitle: set('title'), setSummary: set('summary'), setBody: set('bodyText'),
+      selects: f ? [{ label: 'Category', opts: K.categories.map((c) => ({ v: c.id, l: c.name, sel: f.categoryId === c.id })), change: set('categoryId') }, { label: 'Audience', opts: ['Public', 'Internal'].map((v) => ({ v, l: v, sel: f.audience === v })), change: set('audience') }] : [],
+      toolbar: ['Bold', 'List', 'Link'].map((label) => ({ label, go: () => st.demo('Formatting toolbar') })),
+      setTagInput: (e) => this.setState({ f: { ...f, tagInput: e.target.value } }),
+      tagKey: (e) => { if ((e.key === 'Enter' || e.key === ',') && f.tagInput.trim()) { e.preventDefault(); this.setState({ f: { ...f, tags: [...new Set([...f.tags, f.tagInput.trim().toLowerCase()])], tagInput: '' } }); } },
+      saveDraft: submit(false), publish: submit(true), toast: !!s.toast, toastText: s.toast ? s.toast.text : '' };
+  }
+}
+
+</script>
+</body>
+</html>

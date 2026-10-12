@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;z-index:200;background:#F8FAFC;display:flex;flex-direction:column;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A;min-height:0">
+  <header style="flex:none;height:64px;background:#fff;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:24px;padding:0 32px">
+    <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;border:0;background:none;cursor:pointer;padding:0;height:40px"><span style="width:32px;height:32px;border-radius:10px;background:#7C3AED;color:#fff;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="bolt" size="18" hint-size="18px,18px"></dc-import></span><span style="font:600 16px/24px var(--font);color:#0F172A">Meridian Lending · Help Center</span></button>
+    <nav style="display:flex;gap:4px;flex:1"><sc-for list="{{ nav }}" as="n" hint-placeholder-count="3"><button onClick="{{ n.go }}" style="height:36px;padding:0 14px;border:0;border-radius:10px;cursor:pointer;font:600 14px/20px var(--font);background:{{ n.bg }};color:{{ n.fg }}" style-hover="background:#F1F5F9">{{ n.label }}</button></sc-for></nav>
+    <button onClick="{{ back }}" style="height:36px;padding:0 4px;border:0;background:none;color:#7C3AED;font:600 14px/20px var(--font);cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="color:#6D28D9"><dc-import name="Icon" icon="back" size="16" stroke="1.75" hint-size="16px,16px"></dc-import>Back to agent view</button>
+  </header>
+  <div style="flex:1;min-height:0;overflow-y:auto"><div style="max-width:960px;margin:0 auto;padding:32px 32px 64px;display:flex;flex-direction:column;gap:24px;box-sizing:border-box">
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:16px 0 8px"><div style="font:600 28px/36px var(--font);letter-spacing:-.3px">How can we help?</div>
+      <label style="height:52px;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:0 16px;border:1px solid #E2E8F0;border-radius:14px;background:#fff;color:#64748B;box-shadow:0 1px 2px rgba(15,18,32,.05)"><dc-import name="Icon" icon="search" size="18" hint-size="18px,18px"></dc-import><input aria-label="Search the help center" value="{{ q }}" onChange="{{ setQ }}" placeholder="Search articles, e.g. early settlement" style="flex:1;min-width:0;border:0;outline:0;background:none;font:400 16px/24px var(--font);color:#0F172A"></label>
+      <sc-if value="{{ hasQ }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.1);overflow:hidden">
+        <sc-for list="{{ results }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-top:1px solid #F1F5F9;background:#fff;padding:0 16px;height:56px;cursor:pointer" style-hover="background:#F8FAFC"><span style="flex:1;min-width:0"><span style="display:block;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span><span style="display:block;font:400 12px/16px var(--font);color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.summary }}</span></span></button></sc-for>
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}"><div style="padding:20px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:500 14px/20px var(--font);color:#475569">No articles match “{{ q }}”.</span><button onClick="{{ goSubmit }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer">Submit a request</button></div></sc-if>
+      </div></sc-if></div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px"><sc-for list="{{ cats }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.go }}" style="text-align:left;border:0;background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(15,18,32,.05);cursor:pointer;display:flex;flex-direction:column;gap:8px" style-hover="box-shadow:0 6px 18px rgba(15,18,32,.08)"><span style="width:40px;height:40px;border-radius:12px;background:#EDE9FE;color:#7C3AED;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="{{ c.icon }}" size="20" hint-size="20px,20px"></dc-import></span><span style="font:600 16px/24px var(--font)">{{ c.name }}</span><span style="font:400 14px/20px var(--font);color:#475569">{{ c.description }}</span><span style="font:500 12px/16px var(--font);color:#64748B">{{ c.count }}</span></button></sc-for></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">POPULAR ARTICLES</div>
+      <div style="background:#fff;border-radius:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);overflow:hidden"><sc-for list="{{ popular }}" as="r" hint-placeholder-count="5"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-top:1px solid #F1F5F9;background:#fff;padding:0 20px;height:56px;cursor:pointer" style-hover="background:#F8FAFC"><span style="flex:1;min-width:0"><span style="display:block;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span><span style="display:block;font:400 12px/16px var(--font);color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.summary }}</span></span><dc-import name="Icon" icon="chevron" size="16" color="#64748B" hint-size="16px,16px"></dc-import></button></sc-for></div></div>
+  </sc-if>
+
+  <sc-if value="{{ isCat }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#64748B"><button onClick="{{ goHome }}" style="border:0;background:none;padding:0;color:#7C3AED;font:600 13px/20px var(--font);cursor:pointer;height:32px">Help Center</button><span>/</span><span>{{ catName }}</span></div>
+    <div style="font:600 24px/32px var(--font)">{{ catName }}</div>
+    <div style="background:#fff;border-radius:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);overflow:hidden"><sc-for list="{{ catList }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-top:1px solid #F1F5F9;background:#fff;padding:0 20px;height:56px;cursor:pointer" style-hover="background:#F8FAFC"><span style="flex:1;min-width:0"><span style="display:block;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span><span style="display:block;font:400 12px/16px var(--font);color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.summary }}</span></span><dc-import name="Icon" icon="chevron" size="16" color="#64748B" hint-size="16px,16px"></dc-import></button></sc-for></div>
+  </sc-if>
+
+  <sc-if value="{{ isArt }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#64748B;flex-wrap:wrap"><button onClick="{{ goHome }}" style="border:0;background:none;padding:0;color:#7C3AED;font:600 13px/20px var(--font);cursor:pointer;height:32px">Help Center</button><span>/</span><button onClick="{{ art.goCat }}" style="border:0;background:none;padding:0;color:#7C3AED;font:600 13px/20px var(--font);cursor:pointer;height:32px">{{ art.cat }}</button></div>
+    <div style="font:600 24px/32px var(--font);letter-spacing:-.2px;text-wrap:pretty">{{ art.title }}</div>
+    <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 16px/24px var(--font);color:#334155;text-wrap:pretty">{{ art.summary }}</div>
+      <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:8px"><sc-if value="{{ b.isP }}" hint-placeholder-val="{{ true }}"><div style="font:400 15px/24px var(--font);color:#334155;text-wrap:pretty">{{ b.text }}</div></sc-if><sc-for list="{{ b.steps }}" as="x" hint-placeholder-count="0"><div style="display:flex;gap:12px;align-items:flex-start"><span style="width:24px;height:24px;border-radius:50%;background:#EDE9FE;color:#6D28D9;display:inline-flex;align-items:center;justify-content:center;font:700 12px/1 var(--font);flex:none">{{ x.n }}</span><span style="font:400 15px/24px var(--font);color:#334155;text-wrap:pretty">{{ x.text }}</span></div></sc-for></div></sc-for>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:16px 24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font:600 14px/20px var(--font);flex:1;min-width:160px">{{ voteText }}</span><button onClick="{{ yes }}" disabled="{{ voted }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer;opacity:{{ voteOp }}">Yes</button><button onClick="{{ no }}" disabled="{{ voted }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer;opacity:{{ voteOp }}">No</button></div>
+    <div style="background:#F5F3FF;border-radius:16px;padding:16px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="flex:1;min-width:200px;font:600 14px/20px var(--font);color:#4C1D95">Still need help?</span><button onClick="{{ goSubmit }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Submit a request</button></div>
+    <sc-if value="{{ hasRel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">RELATED ARTICLES</div><div style="background:#fff;border-radius:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);overflow:hidden"><sc-for list="{{ rel }}" as="r" hint-placeholder-count="2"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-top:1px solid #F1F5F9;background:#fff;padding:0 20px;height:56px;cursor:pointer" style-hover="background:#F8FAFC"><span style="flex:1;min-width:0;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span></button></sc-for></div></div></sc-if>
+  </sc-if>
+
+  <sc-if value="{{ isSubmit }}" hint-placeholder-val="{{ false }}">
+    <div style="font:600 24px/32px var(--font)">Submit a request</div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr);gap:16px;align-items:start">
+      <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><sc-for list="{{ fields1 }}" as="f" hint-placeholder-count="3"><label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">{{ f.label }}<input aria-label="{{ f.label }}" value="{{ f.value }}" onChange="{{ f.change }}" placeholder="{{ f.ph }}" style="height:40px;border:1px solid {{ f.bd }};border-radius:10px;padding:0 12px;font:400 14px/20px var(--font);outline:0"></label></sc-for>
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Topic<select aria-label="Topic" onChange="{{ setTopic }}" style="height:40px;border:1px solid #E2E8F0;border-radius:10px;padding:0 8px;font:500 14px/20px var(--font);outline:0;background:#fff"><sc-for list="{{ topics }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.v }}</option></sc-for></select></label></div>
+        <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Subject<input aria-label="Subject" value="{{ form.subject }}" onChange="{{ setSubject }}" placeholder="Short summary of your question" style="height:40px;border:1px solid {{ subjBd }};border-radius:10px;padding:0 12px;font:400 14px/20px var(--font);outline:0"></label>
+        <sc-if value="{{ hasSug }}" hint-placeholder-val="{{ false }}"><div style="background:#F5F3FF;border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:4px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#6D28D9">SUGGESTED ARTICLES</div><sc-for list="{{ sug }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.go }}" style="text-align:left;border:0;background:none;height:32px;padding:0;cursor:pointer;font:600 14px/20px var(--font);color:#4C1D95;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" style-hover="text-decoration:underline">{{ r.title }}</button></sc-for></div></sc-if>
+        <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Description<textarea aria-label="Description" value="{{ form.description }}" onChange="{{ setDesc }}" placeholder="Tell us what happened" style="height:120px;resize:vertical;border:1px solid {{ descBd }};border-radius:12px;padding:10px 12px;font:400 14px/20px var(--font);outline:0"></textarea></label>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><button onClick="{{ addFile }}" style="height:36px;padding:0 14px;border:1px dashed #CBD5E1;border-radius:10px;background:#F8FAFC;color:#475569;font:600 13px/20px var(--font);cursor:pointer;display:flex;align-items:center;gap:6px"><dc-import name="Icon" icon="paperclip" size="16" hint-size="16px,16px"></dc-import>Attach a file (demo)</button><sc-for list="{{ files }}" as="x" hint-placeholder-count="0"><span style="background:#F1F5F9;color:#475569;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">{{ x }}</span></sc-for></div>
+        <sc-if value="{{ formErr }}" hint-placeholder-val="{{ false }}"><div style="font:600 13px/20px var(--font);color:#B91C1C">{{ formErr }}</div></sc-if>
+        <div style="display:flex;justify-content:flex-end"><button onClick="{{ submit }}" style="height:40px;padding:0 20px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Submit request</button></div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(15,18,32,.05);font:400 14px/20px var(--font);color:#475569">Most answers are in the Help Center. Type your subject and we will suggest articles that may solve it right away.</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSuccess }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#fff;border-radius:16px;padding:40px 24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:#34C759;color:#fff;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="24" stroke="2.5" hint-size="24px,24px"></dc-import></div>
+      <div style="font:600 20px/28px var(--font)">We received your request</div><div style="font:400 14px/20px var(--font);color:#475569">Your reference number is</div><div style="font:700 24px/32px var(--mono);color:#6D28D9">{{ successId }}</div><div style="font:400 13px/20px var(--font);color:#64748B">Keep it, with your email, to track progress.</div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button onClick="{{ goHome }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Back to Help Center</button><button onClick="{{ trackThis }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Track this request</button></div></div>
+  </sc-if>
+
+  <sc-if value="{{ isTrack }}" hint-placeholder-val="{{ false }}">
+    <div style="font:600 24px/32px var(--font)">Track your request</div>
+    <div style="background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap"><label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B;flex:1;min-width:160px">Reference number<input aria-label="Reference number" value="{{ trackRef }}" onChange="{{ setRef }}" placeholder="TK-1017" style="height:40px;border:1px solid #E2E8F0;border-radius:10px;padding:0 12px;font:500 14px/20px var(--mono);outline:0"></label><label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B;flex:1.3;min-width:200px">Email<input aria-label="Track email" value="{{ trackEmail }}" onChange="{{ setTrackEmail }}" placeholder="you@example.com" style="height:40px;border:1px solid #E2E8F0;border-radius:10px;padding:0 12px;font:400 14px/20px var(--font);outline:0"></label><button onClick="{{ doTrack }}" style="height:40px;padding:0 20px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Track</button></div>
+    <sc-if value="{{ trackErr }}" hint-placeholder-val="{{ false }}"><div style="font:600 13px/20px var(--font);color:#B91C1C">{{ trackErr }}</div></sc-if>
+    <sc-if value="{{ hasTicket }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:16px">
+        <div><div style="font:700 12px/16px var(--mono);color:#64748B">{{ tk.id }}</div><div style="font:600 18px/24px var(--font)">{{ tk.subject }}</div><div style="font:400 12px/16px var(--font);color:#64748B">Submitted {{ tk.created }}</div></div>
+        <div style="display:flex;gap:8px"><sc-for list="{{ steps }}" as="p" hint-placeholder-count="4"><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px"><span style="width:24px;height:24px;border-radius:50%;background:{{ p.bg }};color:{{ p.fg }};display:inline-flex;align-items:center;justify-content:center;font:700 12px/1 var(--font);flex:none">{{ p.n }}</span><span style="height:2px;flex:1;background:{{ p.line }};border-radius:1px"></span></div><div style="font:600 13px/20px var(--font);color:{{ p.tc }}">{{ p.label }}</div></div></sc-for></div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:4px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;padding-bottom:4px">MESSAGES</div>
+        <sc-for list="{{ msgs }}" as="e" hint-placeholder-count="2"><div style="padding:10px 0;border-top:1px solid #F1F5F9;display:flex;flex-direction:column;gap:2px"><span style="font:400 12px/16px var(--font);color:#64748B">{{ e.who }} · {{ e.time }}</span><span style="font:400 14px/20px var(--font);color:#334155;text-wrap:pretty">{{ e.text }}</span></div></sc-for>
+        <textarea aria-label="Reply" value="{{ reply }}" onChange="{{ setReply }}" placeholder="Write a reply…" style="height:72px;resize:none;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font:400 14px/20px var(--font);outline:0;margin-top:8px"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px"><button onClick="{{ sendReply }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Send reply</button></div></div>
+    </sc-if>
+  </sc-if>
+
+  </div></div>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/20px var(--font);white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="12" stroke="2.5" hint-size="12px,12px"></dc-import></span>{{ toastText }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, view: 'home', q: '', catId: null, artId: null, form: { name: '', email: '', loanRef: '', topic: 'Repayment', subject: '', description: '' }, files: [], formErr: '', bad: {}, successId: '', trackRef: '', trackEmail: '', trackedId: null, trackErr: '', reply: '', voted: {} };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  renderVals() {
+    const { m, s, view, q, catId, artId, form, files, formErr, bad, successId, trackRef, trackEmail, trackedId, trackErr, reply, voted } = this.state, nop = () => {};
+    const blank = { nav: [], back: nop, goHome: nop, isHome: true, isCat: false, isArt: false, isSubmit: false, isSuccess: false, isTrack: false, q: '', setQ: nop, hasQ: false, results: [], noResults: false, goSubmit: nop, cats: [], popular: [], catName: '', catList: [], art: { cat: '', title: '', summary: '', goCat: nop }, blocks: [], voteText: '', yes: nop, no: nop, voted: false, voteOp: 1, hasRel: false, rel: [], fields1: [], topics: [], setTopic: nop, form: { subject: '', description: '' }, subjBd: '#E2E8F0', descBd: '#E2E8F0', setSubject: nop, setDesc: nop, hasSug: false, sug: [], addFile: nop, files: [], formErr: '', submit: nop, successId: '', trackThis: nop, trackRef: '', trackEmail: '', setRef: nop, setTrackEmail: nop, doTrack: nop, trackErr: '', hasTicket: false, tk: { id: '', subject: '', created: '' }, steps: [], msgs: [], reply: '', setReply: nop, sendReply: nop, toast: false, toastText: '' };
+    if (!m || !s) return blank;
+    const st = m.store, pub = m.kbPortalArticles(s), catOf = (id) => s.kb.categories.find((c) => c.id === id) || { name: '' };
+    const go = (v, extra) => this.setState({ view: v, ...(extra || {}) });
+    const openArt = (a) => { st.kbView(a.id); go('article', { artId: a.id }); };
+    const item = (a) => ({ title: a.title, summary: a.summary, go: () => openArt(a) });
+    const navDef = [['home', 'Help Center'], ['submit', 'Submit a request'], ['track', 'Track request']];
+    const act = (k) => view === k || (k === 'home' && ['cat', 'article'].includes(view)) || (k === 'submit' && view === 'success');
+    const results = q.trim() ? pub.filter((a) => m.kbMatch(a, q)).slice(0, 5) : [];
+    const a = pub.find((x) => x.id === artId), tk = trackedId && s.tickets.find((t) => t.id === trackedId);
+    const setF = (k) => (e) => this.setState({ form: { ...form, [k]: e.target.value }, bad: { ...bad, [k]: false } });
+    const v = voted[artId];
+    const sug = view === 'submit' ? m.kbSuggest(s, form.subject, 3) : [];
+    const stage = tk ? m.portalStage(tk) : 0;
+    const doSubmit = () => {
+      const miss = { name: !form.name.trim(), email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()), subject: !form.subject.trim(), description: !form.description.trim() };
+      if (Object.values(miss).some(Boolean)) return this.setState({ bad: miss, formErr: 'Please complete the highlighted fields with a valid email.' });
+      const id = st.portalSubmit({ ...form, description: form.description + (files.length ? ' [Attachments: ' + files.join(', ') + ']' : '') });
+      this.setState({ view: 'success', successId: id, trackRef: id, trackEmail: form.email.trim(), formErr: '', bad: {}, form: { name: '', email: '', loanRef: '', topic: 'Repayment', subject: '', description: '' }, files: [] });
+    };
+    return { ...blank,
+      nav: navDef.map(([k, label]) => ({ label, bg: act(k) ? '#EDE9FE' : 'transparent', fg: act(k) ? '#6D28D9' : '#475569', go: () => go(k, k === 'home' ? { q: '' } : {}) })), back: () => st.closePortal(), goHome: () => go('home', { q: '' }),
+      isHome: view === 'home', isCat: view === 'cat', isArt: view === 'article' && !!a, isSubmit: view === 'submit', isSuccess: view === 'success', isTrack: view === 'track',
+      q, setQ: (e) => this.setState({ q: e.target.value }), hasQ: view === 'home' && !!q.trim(), results: results.map(item), noResults: results.length === 0, goSubmit: () => go('submit', { form: { ...form, subject: q || form.subject } }),
+      cats: s.kb.categories.map((c) => ({ ...c, count: pub.filter((x) => x.categoryId === c.id).length + ' articles', go: () => go('cat', { catId: c.id }) })), popular: m.kbTop(s, 5).map(item),
+      catName: catOf(catId).name, catList: pub.filter((x) => x.categoryId === catId).map(item),
+      art: a ? { cat: catOf(a.categoryId).name, title: a.title, summary: a.summary, goCat: () => go('cat', { catId: a.categoryId }) } : blank.art,
+      blocks: a ? a.body.map((b) => (b.t === 'ol' ? { isP: false, text: '', steps: b.x.map((text, i) => ({ n: i + 1, text })) } : { isP: true, text: b.x, steps: [] })) : [],
+      voteText: v ? 'Thank you for your feedback.' : 'Was this helpful?', voted: !!v, voteOp: v ? 0.5 : 1,
+      yes: () => { if (!v && a) { st.kbHelpful(a.id, true); this.setState({ voted: { ...voted, [a.id]: 'y' } }); } }, no: () => { if (!v && a) { st.kbHelpful(a.id, false); this.setState({ voted: { ...voted, [a.id]: 'n' } }); } },
+      hasRel: !!a && m.kbRelated(s, a, true).length > 0, rel: a ? m.kbRelated(s, a, true).map(item) : [],
+      fields1: [['Name', 'name', 'Your full name'], ['Email', 'email', 'you@example.com'], ['Loan reference (optional)', 'loanRef', 'LN-000000']].map(([label, k, ph]) => ({ label, ph, value: form[k], change: setF(k), bd: bad[k] ? '#FF3B30' : '#E2E8F0' })),
+      topics: m.PORTAL_TOPICS.map((v2) => ({ v: v2, sel: form.topic === v2 })), setTopic: (e) => this.setState({ form: { ...form, topic: e.target.value } }),
+      form, subjBd: bad.subject ? '#FF3B30' : '#E2E8F0', descBd: bad.description ? '#FF3B30' : '#E2E8F0', setSubject: setF('subject'), setDesc: setF('description'),
+      hasSug: sug.length > 0, sug: sug.map(item), addFile: () => this.setState({ files: [...files, 'document-' + (files.length + 1) + '.pdf'] }), files, formErr, submit: doSubmit,
+      successId, trackThis: () => go('track', { trackedId: successId, trackErr: '' }),
+      trackRef, trackEmail, setRef: (e) => this.setState({ trackRef: e.target.value }), setTrackEmail: (e) => this.setState({ trackEmail: e.target.value }),
+      doTrack: () => { const t = s.tickets.find((x) => x.id.toLowerCase() === trackRef.trim().toLowerCase() && (x.email || '').toLowerCase() === trackEmail.trim().toLowerCase()); if (!t) return this.setState({ trackedId: null, trackErr: 'We could not find a request with that reference and email.' }); this.setState({ trackedId: t.id, trackErr: '' }); },
+      trackErr, hasTicket: !!tk, tk: tk ? { id: tk.id, subject: tk.subject, created: m.fmtStamp(tk.createdAt) } : blank.tk,
+      steps: m.PORTAL_STAGES.map((label, i) => ({ n: i < stage || (tk && tk.status === 'Resolved') ? '✓' : String(i + 1), label, bg: i < stage || (tk && tk.status === 'Resolved') ? '#34C759' : i === stage ? '#7C3AED' : '#E2E8F0', fg: i <= stage ? '#fff' : '#475569', line: i < stage ? '#34C759' : '#E2E8F0', tc: i === stage ? '#0F172A' : '#475569' })),
+      msgs: tk ? tk.thread.filter(m.isPublicEvent).map((e) => ({ who: e.type === 'customer' ? tk.requester : 'Meridian Support', time: m.fmtStamp(e.at), text: e.text })) : [],
+      reply, setReply: (e) => this.setState({ reply: e.target.value }), sendReply: () => { if (!reply.trim() || !tk) return st.toast('Write a message first'); st.portalReply(tk.id, reply); this.setState({ reply: '' }); st.toast('Reply sent'); },
+      toast: !!s.toast, toastText: s.toast ? s.toast.text : '' };
+  }
+}
+</script>
+</body>
+</html>

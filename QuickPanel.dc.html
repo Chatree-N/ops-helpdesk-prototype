@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdSlide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}</style></helmet>
+<sc-if value="{{ panel }}" hint-placeholder-val="{{ false }}">
+  <aside style="position:absolute;top:0;right:0;bottom:0;width:420px;z-index:25;background:#fff;border-left:1px solid #E2E8F0;box-shadow:0 8px 32px rgba(15,18,32,.12);display:flex;flex-direction:column;animation:mdSlide 200ms ease;min-height:0;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+    <div style="padding:16px 24px 8px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#64748B">#{{ p.id }}</span><dc-import name="Pill" kind="priority" value="{{ p.priority }}" hint-size="56px,20px"></dc-import><dc-import name="Pill" kind="status" value="{{ p.status }}" hint-size="64px,20px"></dc-import><button onClick="{{ closePanel }}" aria-label="Close" style="margin-left:auto;width:32px;height:32px;border:0;background:none;color:#64748B;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center" style-hover="background:#F1F5F9"><dc-import name="Icon" icon="x" size="18" hint-size="18px,18px"></dc-import></button></div>
+      <div style="font:600 18px/24px var(--font);text-wrap:pretty">{{ p.subject }}</div>
+      <div style="font:400 12px/16px var(--font);color:#64748B">{{ p.requester }} · {{ p.requesterRole }} · {{ p.loanRef }}</div>
+    </div>
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 24px 16px;display:flex;flex-direction:column;gap:16px">
+      <div style="background:#F8FAFC;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <dc-import name="SlaRing" size="44" pct="{{ p.pct }}" state="{{ p.state }}" centre="{{ p.centre }}" hint-size="44px,44px"></dc-import>
+        <div style="flex:1;min-width:0"><div style="font:700 14px/20px var(--font)">{{ p.clock }}: {{ p.label }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ p.due }}</div></div>
+        <span style="display:inline-flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155"><dc-import name="Icon" icon="{{ p.chIcon }}" size="16" hint-size="16px,16px"></dc-import>{{ p.channel }}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <sc-for list="{{ selects }}" as="f" hint-placeholder-count="3">
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">{{ f.label }}
+            <span style="position:relative;display:block;height:36px;letter-spacing:0"><span style="height:36px;box-sizing:border-box;border:1px solid #E2E8F0;border-radius:10px;background:#fff;padding:0 8px;font:500 13px/20px var(--font);color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:4px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.cur }}</span><dc-import name="Icon" icon="chevdown" size="14" color="#64748B" hint-size="14px,14px"></dc-import></span><select onChange="{{ f.change }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></span></label>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;margin-bottom:4px">LATEST MESSAGES</div>
+        <sc-for list="{{ msgs }}" as="e" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:4px;padding:10px 0;border-bottom:1px solid #F1F5F9">
+            <div style="display:flex;align-items:center;gap:8px"><span style="background:{{ e.bg }};color:{{ e.fg }};border-radius:999px;padding:0 10px;font:600 12px/20px var(--font)">{{ e.label }}</span><span style="font:400 12px/16px var(--font);color:#64748B">{{ e.time }}</span></div>
+            <div style="font:400 14px/20px var(--font);color:#334155;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ e.text }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="border-top:1px solid #E2E8F0;padding:12px 24px;display:flex;justify-content:flex-end"><button onClick="{{ openTicket }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#6D28D9">Open ticket<dc-import name="Icon" icon="chevron" size="16" stroke="1.75" hint-size="16px,16px"></dc-import></button></div>
+  </aside>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); this.esc = (e) => { const mm = this.state.m; if (e.key === 'Escape' && mm && mm.store.get().selectedId) mm.store.select(null); }; window.addEventListener('keydown', this.esc); }
+  componentWillUnmount() { this.unsub && this.unsub(); window.removeEventListener('keydown', this.esc); }
+  withSel(arr) { return arr.map((f) => ({ ...f, cur: (f.opts.find((o) => o.v === f.value) || { l: '' }).l, opts: f.opts.map((o) => ({ ...o, sel: o.v === f.value })) })); }
+  renderVals() {
+    const { m, s } = this.state, nop = () => {};
+    const blank = { panel: false, p: { id: '', priority: 'Normal', status: 'New', subject: '', requester: '', requesterRole: '', loanRef: '', pct: 100, state: 'ok', centre: '', clock: '', label: '', due: '', chIcon: 'mail', channel: '' }, closePanel: nop, selects: [], msgs: [], openTicket: nop };
+    if (!m || !s) return blank;
+    const t = s.selectedId && s.tickets.find((x) => x.id === s.selectedId);
+    if (!t) return blank;
+    const st = m.store, id = t.id, v = m.slaView(t), icons = { Email: 'mail', LINE: 'chat', Phone: 'phone', Form: 'form' };
+    const agents = m.AGENTS.filter((a) => a.role === 'Agent');
+    const TY = { system: ['System', '#F1F5F9', '#475569'], rule: ['Rule Applied', '#EDE9FE', '#6D28D9'], customer: ['Customer', '#F1F5F9', '#475569'], agent: ['Agent', '#DCFCE7', '#15803D'], note: ['Internal Note', '#FEF3C7', '#92400E'], ai: ['AI Assistant', '#DBEAFE', '#1D4ED8'], call: ['Call log', '#F1F5F9', '#475569'] };
+    const blocked = t.verify && t.verify.level === 'High' && !t.verify.checks.every(Boolean);
+    return { panel: true, closePanel: () => st.select(null), openTicket: () => st.openTicket(id),
+      p: { id, priority: t.priority, status: t.status, subject: t.subject, requester: t.requester, requesterRole: t.requesterRole, loanRef: t.loanRef, pct: v.pct, state: v.state, centre: v.centre, clock: v.clock, label: t.status === 'Resolved' ? 'Resolved' : v.label, due: m.dueLabel(t), chIcon: icons[t.channel], channel: t.channel },
+      selects: this.withSel([
+        { label: 'STATUS', value: t.status, opts: m.STATUSES.map((x) => ({ v: x, l: x })), change: (e) => { const x = e.target.value; if (x === 'Resolved') { if (blocked) st.toast('Verification required before resolving'); else st.resolve(id); } else st.updateTicket(id, { status: x }); } },
+        { label: 'PRIORITY', value: t.priority, opts: m.PRIORITIES.map((x) => ({ v: x, l: x })), change: (e) => st.updateTicket(id, { priority: e.target.value }) },
+        { label: 'ASSIGNEE', value: t.assignee || 'unassigned', opts: [{ v: 'unassigned', l: 'Unassigned' }, ...agents.map((x) => ({ v: x.id, l: x.name }))], change: (e) => st.updateTicket(id, { assignee: e.target.value === 'unassigned' ? null : e.target.value }) }]),
+      msgs: (t.thread || []).slice(-3).map((e) => { const ty = TY[e.type] || TY.system, ag = m.agentById(e.by); return { label: e.type === 'agent' && ag ? 'Agent · ' + ag.name : ty[0], bg: ty[1], fg: ty[2], time: e.at ? m.fmtStamp(e.at) : '', text: e.text || '' }; }) };
+  }
+}
+</script>
+</body>
+</html>

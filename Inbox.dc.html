@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdSlide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}@keyframes mdUp{from{transform:translate(-50%,12px);opacity:0}to{transform:translate(-50%,0);opacity:1}}</style></helmet>
+<div style="position:relative;display:flex;height:100%;min-height:0;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A;background:#F8FAFC">
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:16px;gap:12px;position:relative">
+    <sc-if value="{{ showSub }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="0"><span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 6px 0 12px;border-radius:999px;background:#EDE9FE;color:#6D28D9;font:600 12px/16px var(--font)">{{ c.label }}<button onClick="{{ c.remove }}" aria-label="Remove filter" style="width:20px;height:20px;border:0;border-radius:50%;background:transparent;color:#6D28D9;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0" style-hover="background:#DDD6FE"><dc-import name="Icon" icon="x" size="12" stroke="1.75" hint-size="12px,12px"></dc-import></button></span></sc-for>
+        
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+      <div ref="{{ listRef }}" onScroll="{{ onScroll }}" style="flex:1;min-height:0;background:transparent;border:0;overflow:auto">
+        <div style="min-width:{{ minW }}">
+          <div style="position:sticky;top:0;z-index:2;display:grid;grid-template-columns:{{ gridCols }};gap:12px;align-items:center;padding:0 16px;height:40px;background:#F8FAFC;border-bottom:0">
+            <label style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:0 -8px;cursor:pointer"><input type="checkbox" checked="{{ allChecked }}" onChange="{{ toggleAll }}" aria-label="Select all" style="width:16px;height:16px;accent-color:#7C3AED;margin:0;cursor:pointer"></label>
+            <sc-for list="{{ cols }}" as="h" hint-placeholder-count="9"><button onClick="{{ h.go }}" style="height:32px;border:0;background:none;padding:0 0 0 {{ h.pad }};cursor:pointer;text-align:left;font:700 11px/16px var(--font);letter-spacing:.06em;color:{{ h.color }};display:flex;align-items:center;gap:4px;transition:color 150ms ease" style-hover="color:#334155">{{ h.label }}<span style="font-size:11px">{{ h.arrow }}</span></button></sc-for>
+          </div>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+            <div onClick="{{ r.open }}" onDoubleClick="{{ r.dbl }}" style="display:grid;grid-template-columns:{{ gridCols }};gap:12px;align-items:center;padding:0 16px;height:56px;border-bottom:1px solid #F1F5F9;cursor:pointer;background:{{ r.bg }};box-shadow:{{ r.bar }};transition:background 150ms ease" style-hover="background:#F8FAFC">
+              <label onClick="{{ r.stop }}" style="display:flex;align-items:center;justify-content:center;width:32px;height:56px;margin:0 -8px;cursor:pointer"><input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}" aria-label="Select ticket" style="width:16px;height:16px;accent-color:#7C3AED;margin:0;cursor:pointer"></label>
+              <span title="{{ r.priority }}" style="display:flex;align-items:center;gap:6px;font:500 11px/16px var(--font);color:#64748B"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.dot }};flex:none"></span><sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><span style="font:500 12px/16px var(--font);color:#475569">{{ r.priority }}</span></sc-if></span>
+              <span style="font:700 12px/16px var(--mono);color:#64748B">#{{ r.id }}</span>
+              <span style="min-width:0;display:flex;flex-direction:column"><span style="font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.subject }}</span><span style="font:400 12px/16px var(--font);color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.requester }} · {{ r.requesterRole }}</span></span>
+              
+              <span style="display:flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155"><dc-import name="Icon" icon="{{ r.chIcon }}" size="16" hint-size="16px,16px"></dc-import>{{ r.channel }}</span>
+              <span><dc-import name="Pill" kind="status" value="{{ r.status }}" hint-size="64px,20px"></dc-import></span>
+              <span><dc-import name="Avatar" initials="{{ r.ini }}" color="{{ r.aColor }}" size="28" hint-size="28px,28px"></dc-import></span>
+              <span style="padding-left:12px;display:block"><dc-import name="SlaChip" ticket="{{ r.ticket }}" hint-size="150px,28px"></dc-import></span>
+              <sc-if value="{{ showUpd }}" hint-placeholder-val="{{ true }}"><span style="font:400 12px/16px var(--font);color:#64748B">{{ r.rel }}</span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:32px">
+        <div style="width:48px;height:48px;border-radius:14px;background:#F1F5F9;color:#64748B;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="search" size="24" hint-size="24px,24px"></dc-import></div>
+        <div style="font:700 17px/24px var(--font)">No tickets match these filters</div>
+        <div style="font:400 14px/20px var(--font);color:#64748B">Try a different view or remove a filter.</div>
+        <button onClick="{{ clearAll }}" style="margin-top:8px;height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Clear filters</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeFilters }}" style="position:absolute;inset:0;z-index:20"></div>
+      <div style="position:absolute;top:8px;right:16px;width:440px;z-index:21;background:#fff;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:16px;display:flex;flex-direction:column;gap:16px;animation:mdSlide 150ms ease;max-height:calc(100% - 16px);overflow:auto;box-sizing:border-box">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;margin-bottom:4px">{{ g.label }}</div>
+              <sc-for list="{{ g.items }}" as="o" hint-placeholder-count="4"><label style="display:flex;align-items:center;gap:8px;height:32px;font:500 13px/20px var(--font);color:#334155;cursor:pointer"><input type="checkbox" checked="{{ o.checked }}" onChange="{{ o.toggle }}" style="width:16px;height:16px;accent-color:#7C3AED;margin:0">{{ o.l }}</label></sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #F1F5F9;padding-top:12px">
+          <button onClick="{{ clearDraft }}" style="height:32px;padding:0 14px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 13px/20px var(--font);cursor:pointer">Clear</button>
+          <button onClick="{{ applyDraft }}" style="height:32px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Apply</button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  <dc-import name="QuickPanel" hint-size="0px,0px"></dc-import>
+  <sc-if value="{{ bulk }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:30;background:#0F172A;color:#fff;border-radius:999px;padding:8px 8px 8px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 32px rgba(15,23,42,.3);animation:mdUp 200ms ease;white-space:nowrap">
+      <span style="font:600 13px/20px var(--font);font-variant-numeric:tabular-nums">{{ checkedCount }} selected</span>
+      <sc-for list="{{ bulkSelects }}" as="b" hint-placeholder-count="3">
+        <select value="" onChange="{{ b.change }}" style="height:32px;border:1px solid #334155;border-radius:999px;background:#1E293B;color:#fff;padding:0 12px;font:600 13px/20px var(--font);outline:0;cursor:pointer">
+          <option value="">{{ b.label }}</option>
+          <sc-for list="{{ b.opts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+        </select>
+      </sc-for>
+      <button onClick="{{ clearChecked }}" style="height:32px;padding:0 14px;border:0;border-radius:999px;background:#334155;color:#fff;font:600 13px/20px var(--font);cursor:pointer" style-hover="background:#475569">Clear</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;bottom:{{ toastBottom }};transform:translateX(-50%);z-index:31;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/20px var(--font);animation:mdUp 200ms ease;white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="12" stroke="2.5" hint-size="12px,12px"></dc-import></span>{{ toastText }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  listRef = React.createRef();
+  restored = false;
+  componentDidUpdate() { if (!this.restored && this.m && this.listRef.current) { this.restored = true; this.listRef.current.scrollTop = this.m.store.get().inboxScroll || 0; } }
+  state = { m: null, s: null, draft: { status: [], channel: [], assignee: [], team: [] } };
+  componentDidMount() {
+    window.addEventListener('resize', this.rz);
+    import('./store.js').then((m) => {
+      this.m = m;
+      this.unsub = m.store.subscribe((s) => { const prev = this.state.s, o = { s }; if (s.filtersOpen && !(prev && prev.filtersOpen)) o.draft = JSON.parse(JSON.stringify(s.filters)); this.setState(o); });
+      this.setState({ m, s: m.store.get() });
+    });
+  }
+  withSel(arr) { return arr.map((f) => ({ ...f, cur: (f.opts.find((o) => o.v === f.value) || { l: '' }).l, opts: f.opts.map((o) => ({ ...o, sel: o.v === f.value })) })); }
+  rz = () => this.forceUpdate();
+  componentWillUnmount() { window.removeEventListener('resize', this.rz); this.unsub && this.unsub(); }
+  renderVals() {
+    const { m, s, draft } = this.state;
+    const blank = { showSub: false, chips: [], isLead: false, assigneeVal: 'all', assigneeOpts: [], onAssigneeFilter: () => {}, hasRows: true, gridCols: '', minW: '1088px', wide: true, showUpd: true, listRef: this.listRef, onScroll: (e) => this.m && this.m.store.saveScroll(e.target.scrollTop), rows: [], cols: [], allChecked: false, toggleAll: () => {}, empty: false, clearAll: () => {}, filtersOpen: false, closeFilters: () => {}, groups: [], clearDraft: () => {}, applyDraft: () => {}, panel: false, p: { id: '', priority: 'Normal', status: 'New', subject: '', requester: '', requesterRole: '', loanRef: '', pct: 100, state: 'ok', centre: '', clock: '', label: '', due: '', chIcon: 'mail', channel: '' }, closePanel: () => {}, selects: [], msgs: [], openTicket: () => {}, bulk: false, checkedCount: 0, bulkSelects: [], clearChecked: () => {}, toast: false, toastText: '', toastBottom: '24px' };
+    if (!m || !s) return blank;
+    const st = m.store, vis = m.visibleTickets(s), all = m.ticketsOfType(s), icons = { Email: 'mail', LINE: 'chat', Phone: 'phone', Form: 'form' };
+    const dots = { Urgent: '#FF3B30', High: '#FF9500', Normal: '#007AFF', Low: '#8E8E93' };
+    const agents = m.AGENTS.filter((a) => a.role === 'Agent'), isLead = s.role === 'Team Lead';
+    const nm = (id) => (id === 'unassigned' ? 'Unassigned' : (m.agentById(id) || { name: id }).name);
+    const chips = [];
+    Object.entries(s.filters).forEach(([k, arr]) => arr.forEach((v) => chips.push({ label: k[0].toUpperCase() + k.slice(1) + ': ' + (k === 'assignee' ? nm(v) : v), remove: () => st.setFilters({ ...s.filters, [k]: s.filters[k].filter((x) => x !== v) }) })));
+    if (s.query.trim()) chips.push({ label: 'Search: “' + s.query.trim() + '”', remove: () => st.setQuery('') });
+    const wide = window.innerWidth / (parseFloat(getComputedStyle(document.documentElement).zoom) || 1) >= 1360;
+    const cols = [['priority', 'PRI'], ['id', 'ID'], ['subject', 'SUBJECT'], ['channel', 'CHANNEL'], ['status', 'STATUS'], ['assignee', 'OWNER'], ['sla', 'SLA'], ['updated', 'UPDATED']]
+      .filter(() => true).map(([key, label]) => { const on = s.sort.key === key; return { pad: key === 'sla' ? '12px' : '0px', label, arrow: on ? (s.sort.dir === 'asc' ? '↑' : '↓') : '', color: on ? '#7C3AED' : '#64748B', go: () => st.setSort(key) }; });
+    const checked = s.checked.filter((id) => vis.some((t) => t.id === id)), sel = s.selectedId;
+    const rows = vis.map((t) => { try { const a = m.agentById(t.assignee), on = sel === t.id, ck = s.checked.includes(t.id);
+      return { ticket: t, id: t.id, requesterRole: t.requesterRole, priority: t.priority, dot: dots[t.priority], subject: t.subject, requester: t.requester, chIcon: icons[t.channel], channel: t.channel, status: t.status,
+        ini: a ? a.initials : '–', aColor: a ? a.color : '#CBD5E1', rel: m.relTime(t.updatedAt), bg: on ? '#F5F3FF' : ck ? '#FAFAFF' : '#fff', bar: on ? 'inset 3px 0 0 #7C3AED' : 'none', checked: ck,
+        open: () => st.select(on ? null : t.id), dbl: () => st.openTicket(t.id), stop: (e) => e.stopPropagation(), toggle: () => st.toggleCheck(t.id) }; } catch (err) { return null; } }).filter(Boolean);
+    const G = [['status', 'STATUS', m.STATUSES.map((v) => [v, v])], ['channel', 'CHANNEL', m.CHANNELS.map((v) => [v, v])], ['assignee', 'ASSIGNEE', [...agents.map((a) => [a.id, a.name]), ['unassigned', 'Unassigned']]], ['team', 'TEAM', m.TEAMS.map((v) => [v, v])]];
+    const groups = G.map(([k, label, opts]) => ({ label, items: opts.map(([v, l]) => ({ l, checked: (draft[k] || []).includes(v), toggle: () => this.setState({ draft: { ...draft, [k]: (draft[k] || []).includes(v) ? draft[k].filter((x) => x !== v) : [...(draft[k] || []), v] } }) })) }));
+    const t = sel && all.find((x) => x.id === sel), out = {};
+    if (t) {
+      const v = m.slaView(t), cl = m.slaClocks(t).active, a = m.agentById(t.assignee);
+      const TY = { system: ['System', '#F1F5F9', '#475569'], rule: ['Rule Applied', '#EDE9FE', '#6D28D9'], customer: ['Customer', '#F1F5F9', '#475569'], agent: ['Agent', '#DCFCE7', '#15803D'], note: ['Internal Note', '#FEF3C7', '#92400E'], ai: ['AI Assistant', '#DBEAFE', '#1D4ED8'], call: ['Call log', '#F1F5F9', '#475569'] };
+      const P = t.id;
+      out.p = { id: t.id, priority: t.priority, status: t.status, subject: t.subject, requester: t.requester, requesterRole: t.requesterRole, loanRef: t.loanRef, pct: v.pct, state: v.state, centre: v.centre, clock: v.clock, label: t.status === 'Resolved' ? 'Resolved' : v.label, due: m.dueLabel(t), chIcon: icons[t.channel], channel: t.channel };
+      out.selects = this.withSel([
+        { label: 'STATUS', value: t.status, opts: m.STATUSES.map((x) => ({ v: x, l: x })), change: (e) => st.updateTicket(P, { status: e.target.value }) },
+        { label: 'PRIORITY', value: t.priority, opts: m.PRIORITIES.map((x) => ({ v: x, l: x })), change: (e) => st.updateTicket(P, { priority: e.target.value }) },
+        { label: 'ASSIGNEE', value: t.assignee || 'unassigned', opts: [{ v: 'unassigned', l: 'Unassigned' }, ...agents.map((x) => ({ v: x.id, l: x.name }))], change: (e) => st.updateTicket(P, { assignee: e.target.value === 'unassigned' ? null : e.target.value }) },
+      ]);
+      out.msgs = (t.thread || []).slice(-3).map((e) => { const ty = TY[e.type] || TY.system, ag = m.agentById(e.by); return { label: e.type === 'agent' && ag ? 'Agent · ' + ag.name : ty[0], bg: ty[1], fg: ty[2], time: e.at ? m.fmtStamp(e.at) : '', text: e.text || '' }; });
+    }
+    const agentOpts = [{ v: 'unassigned', l: 'Unassigned' }, ...agents.map((x) => ({ v: x.id, l: x.name }))];
+    const bulkSel = [['Assign', agentOpts, (v) => ({ assignee: v === 'unassigned' ? null : v })], ['Priority', m.PRIORITIES.map((x) => ({ v: x, l: x })), (v) => ({ priority: v })], ['Status', m.STATUSES.map((x) => ({ v: x, l: x })), (v) => ({ status: v })]]
+      .map(([label, opts, patch]) => ({ label, opts, change: (e) => { const v = e.target.value; if (v) st.bulkUpdate(s.checked, patch(v)); } }));
+    const aF = s.filters.assignee.length === 1 ? s.filters.assignee[0] : 'all';
+    return { ...blank, ...out, gridCols: wide ? '36px 88px 84px minmax(240px,1fr) 96px 104px 64px 168px 80px' : '36px 28px 84px minmax(240px,1fr) 96px 104px 64px 168px 80px', minW: wide ? '1088px' : '1030px', wide, showUpd: true, listRef: this.listRef, onScroll: (e) => st.saveScroll(e.target.scrollTop), showSub: chips.length > 0, chips, isLead, assigneeVal: aF,
+      assigneeOpts: [{ v: 'all', l: 'All assignees' }, ...agentOpts].map((o) => ({ ...o, sel: o.v === aF })), onAssigneeFilter: (e) => st.setFilters({ ...s.filters, assignee: e.target.value === 'all' ? [] : [e.target.value] }),
+      hasRows: rows.length > 0, empty: rows.length === 0, rows, cols, allChecked: vis.length > 0 && vis.every((x) => s.checked.includes(x.id)),
+      toggleAll: () => st.setChecked(vis.every((x) => s.checked.includes(x.id)) ? s.checked.filter((id) => !vis.some((x) => x.id === id)) : [...new Set([...s.checked, ...vis.map((x) => x.id)])]),
+      clearAll: () => st.clearFilters(), filtersOpen: s.filtersOpen, closeFilters: () => st.closeFilters(), groups, clearDraft: () => this.setState({ draft: { status: [], channel: [], assignee: [], team: [] } }), applyDraft: () => st.setFilters(draft),
+      panel: !!t, closePanel: () => st.select(null), openTicket: () => st.openTicket(sel),
+      bulk: s.checked.length > 0, checkedCount: s.checked.length, bulkSelects: bulkSel, clearChecked: () => st.clearChecked(),
+      toast: !!s.toast, toastText: s.toast ? s.toast.text : '', toastBottom: s.checked.length ? '80px' : '24px' };
+  }
+}
+</script>
+</body>
+</html>

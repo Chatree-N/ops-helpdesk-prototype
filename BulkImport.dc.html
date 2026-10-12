@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ close }}" style="position:absolute;inset:0;background:rgba(15,23,42,.35);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+    <div onClick="{{ stop }}" style="width:min(980px,100%);max-height:100%;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,.3);display:flex;flex-direction:column;min-height:0">
+      <div style="padding:20px 24px 12px;display:flex;align-items:center;gap:16px">
+        <div style="flex:1"><div style="font:600 20px/28px var(--font)">Bulk import dealers</div><div style="font:400 13px/20px var(--font);color:#64748B">Creates dealers at Stage 0 with consecutive DLR ids. Nothing is saved until you import.</div></div>
+        <div style="display:flex;gap:8px"><sc-for list="{{ steps }}" as="t" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:6px;font:600 12px/16px var(--font);color:{{ t.fg }}"><span style="width:20px;height:20px;border-radius:50%;background:{{ t.bg }};color:{{ t.num }};display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 var(--font)">{{ t.n }}</span>{{ t.label }}</span></sc-for></div>
+        <button onClick="{{ close }}" aria-label="Close" style="width:32px;height:32px;border:0;background:none;color:#64748B;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center" style-hover="background:#F1F5F9"><dc-import name="Icon" icon="x" size="18" hint-size="18px,18px"></dc-import></button>
+      </div>
+      <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:8px 24px 24px;display:flex;flex-direction:column;gap:16px">
+          <div onDragOver="{{ dragOver }}" onDrop="{{ onDrop }}" style="border:1.5px dashed {{ dropBd }};background:{{ dropBg }};border-radius:16px;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+            <div style="width:48px;height:48px;border-radius:14px;background:#EDE9FE;color:#7C3AED;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="form" size="24" hint-size="24px,24px"></dc-import></div>
+            <div style="font:600 15px/20px var(--font)">Drop a CSV file here</div>
+            <div style="font:400 13px/20px var(--font);color:#64748B">or choose a file from your computer</div>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <label style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/36px var(--font);cursor:pointer;box-sizing:border-box">Choose file<input type="file" accept=".csv,text/csv" onChange="{{ onFile }}" style="display:none"></label>
+              <button onClick="{{ useSample }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Use sample CSV</button>
+            </div>
+            <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}"><div style="font:600 13px/20px var(--font);color:#B91C1C;margin-top:8px">{{ error }}</div></sc-if>
+          </div>
+          <div><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;margin-bottom:8px">REQUIRED COLUMNS</div><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ cols }}" as="c" hint-placeholder-count="7"><span style="background:#F1F5F9;color:#475569;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">{{ c }}</span></sc-for></div></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:0 24px 16px;display:flex;flex-direction:column;gap:12px;min-height:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:500 13px/20px var(--font);color:#64748B">{{ fileName }}</span>
+            <span style="background:#DCFCE7;color:#15803D;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">Valid {{ counts.valid }}</span><span style="background:#FEF3C7;color:#92400E;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">Warnings {{ counts.warning }}</span><span style="background:#FEE2E2;color:#B91C1C;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">Errors {{ counts.error }}</span></div>
+          <div style="overflow:auto;border:1px solid #E2E8F0;border-radius:12px;max-height:340px">
+            <div style="min-width:860px">
+              <div style="display:grid;grid-template-columns:32px minmax(150px,1.3fr) minmax(90px,1fr) 80px minmax(100px,1fr) 100px minmax(140px,1.3fr) 80px minmax(150px,1.4fr);gap:8px;padding:8px 12px;position:sticky;top:0;background:#F8FAFC;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B"><span></span><span>DEALER</span><span>BRANCH</span><span>REGION</span><span>CONTACT</span><span>PHONE</span><span>EMAIL</span><span>SALES</span><span>CHECK</span></div>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:32px minmax(150px,1.3fr) minmax(90px,1fr) 80px minmax(100px,1fr) 100px minmax(140px,1.3fr) 80px minmax(150px,1.4fr);gap:8px;align-items:center;padding:8px 12px;min-height:56px;box-sizing:border-box;border-top:1px solid #F1F5F9;background:{{ r.bg }};font:400 13px/20px var(--font)">
+                  <input type="checkbox" checked="{{ r.checked }}" disabled="{{ r.disabled }}" onChange="{{ r.toggle }}" aria-label="Include row" style="width:16px;height:16px;accent-color:#7C3AED;margin:0">
+                  <span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.branch }}</span><span>{{ r.region }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.contact }}</span><span>{{ r.phone }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.email }}</span><span>{{ r.sales }}</span>
+                  <span style="font:600 12px/16px var(--font);color:{{ r.fg }}">{{ r.msg }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 24px 20px;display:flex;align-items:center;gap:8px;border-top:1px solid #F1F5F9">
+          <button onClick="{{ back }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Back</button>
+          <span style="margin-left:auto;font:400 13px/20px var(--font);color:#64748B">{{ selectedNote }}</span>
+          <button onClick="{{ doImport }}" disabled="{{ importOff }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:{{ importCursor }};opacity:{{ importOp }}">{{ importLabel }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 24px 28px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+          <div style="width:48px;height:48px;border-radius:50%;background:#34C759;color:#fff;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="24" stroke="2.5" hint-size="24px,24px"></dc-import></div>
+          <div style="font:600 20px/28px var(--font)">{{ doneTitle }}</div>
+          <div style="font:400 14px/20px var(--font);color:#64748B">{{ doneSub }}</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><button onClick="{{ again }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Import another file</button><button onClick="{{ viewBoard }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">View on board</button></div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, step: 'A', fileName: '', rows: [], error: '', result: null, over: false };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => { const was = this.state.s && this.state.s.importOpen; const o = { s }; if (s.importOpen && !was) Object.assign(o, { step: 'A', fileName: '', rows: [], error: '', result: null, over: false }); this.setState(o); }); this.setState({ m, s: m.store.get() }); }); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  load(text, name) {
+    const { m, s } = this.state, res = m.csvToRows(text);
+    if (res.error) return this.setState({ error: res.error });
+    if (!res.rows.length) return this.setState({ error: 'No data rows found.' });
+    const rows = m.validateRows(res.rows, s.dealers).map((r) => ({ ...r, checked: r.level === 'valid' }));
+    this.setState({ step: 'B', rows, fileName: name, error: '' });
+  }
+  renderVals() {
+    const { m, s, step, rows, fileName, error, result, over } = this.state, nop = () => {};
+    const blank = { open: false, close: nop, stop: nop, steps: [], isA: true, isB: false, isC: false, dragOver: nop, onDrop: nop, dropBd: '#CBD5E1', dropBg: '#F8FAFC', onFile: nop, useSample: nop, error: '', cols: [], fileName: '', counts: { valid: 0, warning: 0, error: 0 }, rows: [], back: nop, selectedNote: '', doImport: nop, importOff: true, importCursor: 'pointer', importOp: 1, importLabel: '', doneTitle: '', doneSub: '', again: nop, viewBoard: nop };
+    if (!m || !s || !s.importOpen) return blank;
+    const st = m.store, ord = ['A', 'B', 'C'], labels = ['Upload', 'Preview', 'Done'];
+    const counts = { valid: rows.filter((r) => r.level === 'valid').length, warning: rows.filter((r) => r.level === 'warning').length, error: rows.filter((r) => r.level === 'error').length };
+    const n = rows.filter((r) => r.checked).length, cur = ord.indexOf(step);
+    const upd = (i, v) => this.setState({ rows: rows.map((r, j) => (j === i ? { ...r, checked: v } : r)) });
+    return { ...blank, open: true, close: () => st.closeImport(), stop: (e) => e.stopPropagation(),
+      steps: labels.map((label, i) => ({ n: i + 1, label, bg: i <= cur ? '#7C3AED' : '#E2E8F0', num: i <= cur ? '#fff' : '#64748B', fg: i === cur ? '#0F172A' : '#94A3B8' })),
+      isA: step === 'A', isB: step === 'B', isC: step === 'C', dropBd: over ? '#7C3AED' : '#CBD5E1', dropBg: over ? '#F5F3FF' : '#F8FAFC',
+      dragOver: (e) => { e.preventDefault(); if (!over) this.setState({ over: true }); },
+      onDrop: (e) => { e.preventDefault(); this.setState({ over: false }); const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) f.text().then((t) => this.load(t, f.name)); },
+      onFile: (e) => { const f = e.target.files[0]; if (f) f.text().then((t) => this.load(t, f.name)); },
+      useSample: () => this.load(m.SAMPLE_CSV, 'sample-dealers.csv (8 rows)'), error, cols: m.CSV_COLS, fileName, counts,
+      rows: rows.map((r, i) => ({ checked: r.checked, disabled: r.level === 'error', toggle: () => upd(i, !r.checked), name: r.data.name || '(missing)', branch: r.data.branch || '—', region: r.data.region || '—', contact: r.data.contactName || '—', phone: r.data.phone || '—', email: r.data.email || '—', sales: r.data.salesOwner || '—',
+        bg: r.level === 'error' ? '#FEF2F2' : r.level === 'warning' ? '#FFFBEB' : '#fff', fg: r.level === 'error' ? '#B91C1C' : r.level === 'warning' ? '#92400E' : '#15803D', msg: r.level === 'valid' ? 'OK' : [...r.errors, ...r.warnings].join('; ') })),
+      back: () => this.setState({ step: 'A', rows: [] }), selectedNote: n + ' of ' + rows.length + ' rows selected', importOff: n === 0, importCursor: n === 0 ? 'not-allowed' : 'pointer', importOp: n === 0 ? 0.45 : 1, importLabel: 'Import ' + n + (n === 1 ? ' dealer' : ' dealers'),
+      doImport: () => { if (!n) return; const ids = st.bulkImport(rows.filter((r) => r.checked).map((r) => r.data)); this.setState({ step: 'C', result: ids }); },
+      doneTitle: result ? result.length + (result.length === 1 ? ' dealer imported' : ' dealers imported') : '', doneSub: result && result.length ? result[0] + (result.length > 1 ? ' to ' + result[result.length - 1] : '') + ' are now at Stage 0: Intake received.' : '',
+      again: () => this.setState({ step: 'A', rows: [], result: null }), viewBoard: () => { st.closeImport(); st.clearFilters(); st.setRoute('kanban'); } };
+  }
+}
+</script>
+</body>
+</html>

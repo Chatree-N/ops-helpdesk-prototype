@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--violet:#7C3AED;--violet-hover:#6D28D9;--violet-50:#F5F3FF;--violet-100:#EDE9FE;--violet-200:#DDD6FE;--navy:#0F1220;--bg:#F8FAFC;--line:#E2E8F0;--text:#0F172A;--font:-apple-system,'SF Pro Text',Inter,system-ui,sans-serif;--mono:ui-monospace,'SF Mono',Menlo,monospace}
+html,body{margin:0;background:#F8FAFC;font-family:var(--font);-webkit-font-smoothing:antialiased}
+a{color:#7C3AED;text-decoration:none}a:hover{color:#6D28D9}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
+</style>
+</helmet>
+<div style="max-width:1200px;margin:0 auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:48px;font-family:var(--font);color:#0F172A">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+    <div><div style="font:700 28px/34px var(--font)">Design system preview</div><div style="font:400 14px/20px var(--font);color:#64748B">Meridian Desk · foundation components. All figures below are computed from <span style="font-family:var(--mono)">store.js</span>.</div></div>
+    <a href="Meridian Desk.dc.html" style="font:600 14px/20px var(--font)">Open app shell →</a>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">APP SHELL · RAIL + HEADER + TOOLBAR (LIVE)</div>
+    <div style="height:460px;border:1px solid #E2E8F0;border-radius:16px;overflow:hidden;position:relative"><dc-import name="Meridian Desk" embed-height="460px" style="display:block;height:460px" hint-size="100%,460px"></dc-import></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">DATA SUMMARY · COMPUTED FROM STORE</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+      <sc-for list="{{ summary }}" as="g" hint-placeholder-count="5"><div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px 20px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#94A3B8;margin-bottom:8px">{{ g.title }}</div><sc-for list="{{ g.items }}" as="i" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;font:500 14px/28px var(--font);color:#334155"><span>{{ i.label }}</span><span style="font-weight:700;color:#0F172A;font-variant-numeric:tabular-nums">{{ i.n }}</span></div></sc-for></div></sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">COLOUR</div>
+    <sc-for list="{{ palettes }}" as="pal" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font:500 12px/16px var(--font);color:#64748B">{{ pal.name }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <sc-for list="{{ pal.items }}" as="c" hint-placeholder-count="5"><div style="width:112px"><div style="height:48px;border-radius:12px;background:{{ c.hex }};border:1px solid rgba(15,23,42,.08)"></div><div style="font:600 12px/16px var(--font);margin-top:6px">{{ c.label }}</div><div style="font:500 11px/16px var(--mono);color:#94A3B8">{{ c.hex }}</div></div></sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">TYPE · SF PRO STACK, INTER FALLBACK · 8PT GRID</div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ type }}" as="t" hint-placeholder-count="6"><div style="display:flex;align-items:baseline;gap:24px"><span style="width:160px;flex:none;font:500 12px/16px var(--font);color:#94A3B8">{{ t.name }}</span><span style="font-family:{{ t.fam }};font-size:{{ t.size }};line-height:{{ t.lh }};font-weight:{{ t.w }};color:{{ t.color }};letter-spacing:{{ t.ls }}">{{ t.sample }}</span></div></sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">PILLS · AVATARS · SLA RINGS · CHANNELS</div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="width:80px;font:500 12px/16px var(--font);color:#94A3B8">Priority</span><sc-for list="{{ priorities }}" as="p" hint-placeholder-count="4"><dc-import name="Pill" kind="priority" value="{{ p }}" hint-size="64px,20px"></dc-import></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="width:80px;font:500 12px/16px var(--font);color:#94A3B8">Status</span><sc-for list="{{ statuses }}" as="p" hint-placeholder-count="5"><dc-import name="Pill" kind="status" value="{{ p }}" hint-size="64px,20px"></dc-import></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="width:80px;font:500 12px/16px var(--font);color:#94A3B8">Team</span><sc-for list="{{ teams }}" as="p" hint-placeholder-count="4"><dc-import name="Pill" kind="team" value="{{ p }}" hint-size="80px,20px"></dc-import></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="width:80px;font:500 12px/16px var(--font);color:#94A3B8">Channel</span><sc-for list="{{ channels }}" as="c" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155;margin-right:12px"><dc-import name="Icon" icon="{{ c.icon }}" size="16" hint-size="16px,16px"></dc-import>{{ c.label }} <span style="color:#94A3B8;font-variant-numeric:tabular-nums">{{ c.count }}</span></span></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><span style="width:80px;font:500 12px/16px var(--font);color:#94A3B8">Avatars</span><sc-for list="{{ agents }}" as="a" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155"><dc-import name="Avatar" initials="{{ a.initials }}" color="{{ a.color }}" size="28" hint-size="28px,28px"></dc-import>{{ a.name }}</span></sc-for></div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center"><span style="width:80px;font:500 12px/16px var(--font);color:#94A3B8">SLA ring</span><sc-for list="{{ rings }}" as="r" hint-placeholder-count="5"><span style="display:inline-flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#334155"><dc-import name="SlaRing" size="40" pct="{{ r.pct }}" state="{{ r.state }}" centre="{{ r.centre }}" hint-size="40px,40px"></dc-import>{{ r.label }}</span></sc-for></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">BUTTONS · TABS · SEGMENTED · FILTER PILLS</div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <sc-for list="{{ buttons }}" as="b" hint-placeholder-count="5"><button style="height:36px;padding:0 16px;border-radius:10px;border:{{ b.border }};background:{{ b.bg }};color:{{ b.fg }};font:600 14px/20px var(--font);display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:filter 150ms ease" style-hover="filter:brightness(.92)" style-active="transform:scale(.98)"><dc-import name="Icon" icon="{{ b.icon }}" size="16" stroke="2" hint-size="16px,16px"></dc-import>{{ b.label }}</button></sc-for>
+      </div>
+      <div style="display:flex;gap:24px;border-bottom:1px solid #E2E8F0;width:fit-content">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="border:0;background:none;padding:8px 0;margin-bottom:-1px;cursor:pointer;font:600 14px/20px var(--font);color:{{ t.fg }};border-bottom:2px solid {{ t.line }}">{{ t.label }}</button></sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px">
+        <div style="display:flex;background:#F1F5F9;border-radius:10px;padding:2px;gap:2px"><sc-for list="{{ segs }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.go }}" style="height:28px;padding:0 12px;border:0;border-radius:8px;cursor:pointer;font:600 13px/20px var(--font);background:{{ s.bg }};color:{{ s.fg }};box-shadow:{{ s.sh }}">{{ s.label }}</button></sc-for></div>
+        <span style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#94A3B8">VIEW:</span>
+        <div style="display:flex;gap:4px"><sc-for list="{{ pills }}" as="p" hint-placeholder-count="4"><button onClick="{{ p.go }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;cursor:pointer;font:500 13px/20px var(--font);background:{{ p.bg }};color:{{ p.fg }}">{{ p.label }}</button></sc-for></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">CARD · DEFAULT, SELECTED (VIOLET GLOW), BREACHED, PAUSED</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4"><dc-import name="TicketCard" ticket="{{ c.ticket }}" selected="{{ c.selected }}" hint-size="100%,250px"></dc-import></sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">TABLE ROW · INBOX</div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;overflow-x:auto"><div style="min-width:1120px">
+      <div style="display:grid;grid-template-columns:84px minmax(0,2.4fr) 130px 84px minmax(0,1.3fr) 96px 120px 40px 72px;gap:12px;padding:10px 16px;background:#F8FAFC;border-bottom:1px solid #E2E8F0;font:600 11px/16px var(--font);letter-spacing:.06em;color:#94A3B8"><span>ID</span><span>SUBJECT</span><span>SLA</span><span>CHANNEL</span><span>REQUESTER</span><span>STATUS</span><span>TEAM</span><span></span><span style="text-align:right">UPDATED</span></div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:84px minmax(0,2.4fr) 130px 84px minmax(0,1.3fr) 96px 120px 40px 72px;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid #F1F5F9;min-height:32px;transition:background 150ms ease;cursor:pointer" style-hover="background:#F5F3FF">
+          <span style="font:700 12px/16px var(--mono);color:#94A3B8">#{{ r.id }}</span>
+          <span style="display:flex;align-items:center;gap:8px;min-width:0"><dc-import name="Pill" kind="priority" value="{{ r.priority }}" hint-size="56px,20px"></dc-import><span style="flex:1;min-width:0;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.subject }}</span></span>
+          <span style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:{{ r.labelColor }};font-variant-numeric:tabular-nums"><dc-import name="SlaRing" size="28" pct="{{ r.pct }}" state="{{ r.state }}" centre="" hint-size="28px,28px"></dc-import>{{ r.label }}</span>
+          <span style="display:flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155"><dc-import name="Icon" icon="{{ r.chIcon }}" size="16" hint-size="16px,16px"></dc-import>{{ r.channel }}</span>
+          <span style="font:400 13px/20px var(--font);color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.requester }}</span>
+          <dc-import name="Pill" kind="status" value="{{ r.status }}" hint-size="64px,20px"></dc-import>
+          <dc-import name="Pill" kind="team" value="{{ r.team }}" hint-size="80px,20px"></dc-import>
+          <dc-import name="Avatar" initials="{{ r.ini }}" color="{{ r.aColor }}" size="24" hint-size="24px,24px"></dc-import>
+          <span style="font:400 12px/16px var(--font);color:#94A3B8;text-align:right">{{ r.rel }}</span>
+        </div>
+      </sc-for>
+    </div></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">KANBAN COLUMN HEADERS · COUNTS FROM STORE</div>
+    <div style="display:flex;gap:16px;overflow-x:auto;padding-bottom:16px">
+      <sc-for list="{{ cols }}" as="c" hint-placeholder-count="5"><div style="flex:none;width:260px;height:56px;box-sizing:border-box;border-radius:16px;background:{{ c.bg }};border:1px solid {{ c.bd }};display:flex;align-items:center;gap:8px;padding:0 16px"><span style="width:8px;height:8px;border-radius:50%;background:{{ c.dot }}"></span><span style="font:700 12px/16px var(--font);letter-spacing:.06em;color:{{ c.fg }}">{{ c.label }}</span><span style="margin-left:auto;min-width:24px;height:24px;border-radius:12px;background:#fff;border:1px solid {{ c.bd }};color:{{ c.fg }};display:inline-flex;align-items:center;justify-content:center;font:600 12px/1 var(--font);font-variant-numeric:tabular-nums">{{ c.count }}</span></div></sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">DASHBOARD PRIMITIVES</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+      <sc-for list="{{ kpiCards }}" as="k" hint-placeholder-count="4"><div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(15,23,42,.04)"><div style="font:500 14px/20px var(--font);color:#475569">{{ k.label }}</div><div style="font:700 40px/48px var(--font);margin:4px 0 8px;font-variant-numeric:tabular-nums">{{ k.value }}</div><div style="display:flex;align-items:center;gap:8px"><span style="background:#DCFCE7;color:#15803D;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font);white-space:nowrap">{{ k.delta }}</span><span style="font:400 12px/16px var(--font);color:#64748B">{{ k.caption }}</span></div></div></sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px"><div style="font:700 14px/20px var(--font);letter-spacing:.06em;color:#334155">TICKETS BY STATUS</div><div style="font:400 12px/16px var(--font);color:#94A3B8;margin-bottom:16px">Horizontal bars</div>
+        <div style="display:flex;flex-direction:column;gap:12px"><sc-for list="{{ hbars }}" as="b" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:12px"><span style="width:76px;text-align:right;font:500 13px/20px var(--font);color:#475569">{{ b.label }}</span><div style="flex:1;height:28px;border-radius:14px;background:#F1F5F9"><div style="width:{{ b.w }};min-width:28px;height:100%;border-radius:14px;background:{{ b.color }};display:flex;align-items:center;justify-content:flex-end;padding-right:10px;box-sizing:border-box;font:700 13px/1 var(--font);color:#0F172A">{{ b.n }}</div></div><span style="width:36px;font:500 12px/16px var(--font);color:#94A3B8;text-align:right">{{ b.pct }}</span></div></sc-for></div></div>
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px"><div style="font:700 14px/20px var(--font);letter-spacing:.06em;color:#334155">BY PRIORITY</div><div style="font:400 12px/16px var(--font);color:#94A3B8;margin-bottom:16px">Vertical bars</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-around;height:140px"><sc-for list="{{ vbars }}" as="b" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><span style="font:700 13px/16px var(--font)">{{ b.n }}</span><div style="width:44px;height:{{ b.h }};border-radius:8px 8px 0 0;background:{{ b.color }}"></div><span style="font:500 12px/16px var(--font);color:#475569">{{ b.label }}</span></div></sc-for></div></div>
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:24px"><div style="font:700 14px/20px var(--font);letter-spacing:.06em;color:#334155">BY CHANNEL</div><div style="font:400 12px/16px var(--font);color:#94A3B8;margin-bottom:16px">Donut with legend</div>
+        <div style="display:flex;align-items:center;gap:24px"><div style="position:relative;width:128px;height:128px;flex:none"><div style="width:128px;height:128px;border-radius:50%;background:{{ donut }}"></div><div style="position:absolute;inset:22px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font:700 28px/1 var(--font)">{{ donutTotal }}</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1"><sc-for list="{{ legend }}" as="l" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#475569"><span style="width:12px;height:12px;border-radius:3px;background:{{ l.color }}"></span>{{ l.label }}<span style="margin-left:auto;font-weight:700;color:#0F172A">{{ l.n }}</span></div></sc-for></div></div></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:center;gap:16px"><div style="font:700 12px/16px var(--font);letter-spacing:.06em;color:#334155">SLIDE-IN DETAIL PANEL · THREAD EVENTS · COMPOSER</div><button onClick="{{ togglePanel }}" style="height:28px;padding:0 12px;border-radius:8px;border:1px solid #DDD6FE;background:#F5F3FF;color:#6D28D9;font:600 12px/16px var(--font);cursor:pointer">{{ panelBtn }}</button></div>
+    <div style="height:760px;background:#F1F5F9;border:1px solid #E2E8F0;border-radius:16px;position:relative;overflow:hidden;display:flex;justify-content:flex-end">
+      <div style="width:480px;height:100%;background:#fff;border-left:1px solid #E2E8F0;display:flex;flex-direction:column;transform:{{ panelTf }};opacity:{{ panelOp }};transition:transform 200ms ease,opacity 200ms ease">
+        <div style="padding:16px 24px 12px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#94A3B8">#{{ p.id }}</span><dc-import name="Pill" kind="priority" value="{{ p.priority }}" hint-size="56px,20px"></dc-import><dc-import name="Pill" kind="status" value="{{ p.status }}" hint-size="64px,20px"></dc-import><span style="margin-left:auto;color:#94A3B8;display:inline-flex;cursor:pointer"><dc-import name="Icon" icon="x" size="18" hint-size="18px,18px"></dc-import></span></div>
+          <div style="font:700 20px/28px var(--font)">{{ p.subject }}</div>
+          <div style="font:400 12px/16px var(--font);color:#94A3B8">Meridian Desk › {{ p.team }} › #{{ p.id }}</div>
+        </div>
+        <div style="margin:0 24px 12px;background:#F8FAFC;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px">
+          <dc-import name="SlaRing" size="44" pct="{{ p.pct }}" state="{{ p.state }}" centre="{{ p.centre }}" hint-size="44px,44px"></dc-import>
+          <div style="flex:1;min-width:0"><div style="font:700 14px/20px var(--font)">{{ p.clock }}: {{ p.label }}</div><div style="font:400 12px/16px var(--font);color:#64748B">Resolution due {{ p.due }}</div><span style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;font:500 11px/16px var(--font);background:#EDE9FE;color:#6D28D9;border-radius:999px;padding:0 8px"><dc-import name="Icon" icon="eye" size="12" hint-size="12px,12px"></dc-import>Ton is viewing</span></div>
+          <span style="display:inline-flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155"><dc-import name="Icon" icon="{{ p.chIcon }}" size="16" hint-size="16px,16px"></dc-import>{{ p.channel }}</span>
+        </div>
+        <div style="padding:0 24px 12px;display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ actions }}" as="b" hint-placeholder-count="3"><button style="height:32px;padding:0 12px;border:0;border-radius:10px;background:{{ b.bg }};color:#fff;font:600 13px/20px var(--font);display:inline-flex;align-items:center;gap:6px;cursor:pointer"><dc-import name="Icon" icon="{{ b.icon }}" size="16" stroke="2" hint-size="16px,16px"></dc-import>{{ b.label }}</button></sc-for></div>
+        <div style="display:flex;gap:24px;border-bottom:1px solid #E2E8F0;padding:0 24px"><sc-for list="{{ ptabs }}" as="t" hint-placeholder-count="3"><span style="padding:8px 0;margin-bottom:-1px;font:600 14px/20px var(--font);color:{{ t.fg }};border-bottom:2px solid {{ t.line }}">{{ t.label }}</span></sc-for></div>
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 24px">
+          <sc-for list="{{ events }}" as="e" hint-placeholder-count="6">
+            <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F1F5F9">
+              <span style="width:32px;height:32px;border-radius:50%;background:{{ e.badge }};color:{{ e.fg }};display:inline-flex;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{ e.icon }}" size="16" hint-size="16px,16px"></dc-import></span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="background:{{ e.badge }};color:{{ e.fg }};border-radius:999px;padding:0 10px;font:600 12px/20px var(--font)">{{ e.label }}</span><span style="font:400 12px/16px var(--font);color:#94A3B8">{{ e.time }}</span></div>
+                <div style="font:400 13px/20px var(--font);color:#334155;text-wrap:pretty;{{ e.bubble }}">
+                  <sc-if value="{{ e.lock }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;font:600 12px/16px var(--font);color:#B45309;margin-bottom:4px"><dc-import name="Icon" icon="lock" size="12" hint-size="12px,12px"></dc-import>Not visible to customer</div></sc-if>
+                  {{ e.text }}
+                  <sc-if value="{{ e.ai }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;margin-top:8px"><button style="height:28px;padding:0 12px;border:0;border-radius:8px;background:#007AFF;color:#fff;font:600 12px/16px var(--font);cursor:pointer">Accept</button><button style="height:28px;padding:0 12px;border:1px solid #BFDBFE;border-radius:8px;background:#fff;color:#1D4ED8;font:600 12px/16px var(--font);cursor:pointer">Edit</button><button style="height:28px;padding:0 12px;border:0;border-radius:8px;background:none;color:#64748B;font:600 12px/16px var(--font);cursor:pointer">Dismiss</button></div></sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="border-top:1px solid #E2E8F0;padding:12px 24px 16px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:16px"><sc-for list="{{ ctabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="border:0;background:none;padding:0 0 4px;cursor:pointer;font:600 13px/20px var(--font);color:{{ t.fg }};border-bottom:2px solid {{ t.line }}">{{ t.label }}</button></sc-for><span style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;font:500 12px/20px var(--font);color:#64748B"><dc-import name="Icon" icon="sparkle" size="14" hint-size="14px,14px"></dc-import>Macros</span></div>
+          <textarea placeholder="{{ composerPh }}" style="height:64px;resize:none;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font:400 14px/20px var(--font);outline:0;background:{{ composerBg }};box-sizing:border-box;width:100%"></textarea>
+          <div style="display:flex;justify-content:flex-end"><button style="height:32px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">{{ composerBtn }}</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, tab: 0, seg: 0, pill: 0, ctab: 0, open: true };
+  componentDidMount() { import('./store.js').then((m) => this.setState({ m })); }
+  renderVals() {
+    const { m, tab, seg, pill, ctab, open } = this.state;
+    const palettes = [
+      { name: 'Brand · violet', items: [['Violet 600', '#7C3AED'], ['Hover 700', '#6D28D9'], ['Violet 50', '#F5F3FF'], ['Violet 100', '#EDE9FE'], ['Violet 200', '#DDD6FE']] },
+      { name: 'Surfaces & text', items: [['Rail navy', '#0F1220'], ['Page slate-50', '#F8FAFC'], ['Card white', '#FFFFFF'], ['Border slate-200', '#E2E8F0'], ['Text slate-900', '#0F172A'], ['Secondary slate-500', '#64748B'], ['Muted slate-400', '#94A3B8']] },
+      { name: 'System semantic', items: [['Red', '#FF3B30'], ['Orange', '#FF9500'], ['Blue', '#007AFF'], ['Green', '#34C759'], ['Purple', '#AF52DE'], ['Gray', '#8E8E93']] },
+      { name: 'Chart palette', items: [['Slate', '#94A3B8'], ['Amber', '#F2C14E'], ['Emerald', '#52B788'], ['Violet', '#8B5CF6'], ['Blue', '#3B82F6'], ['Cyan', '#38BDF8'], ['Orange', '#F97316'], ['Red', '#F87171']] },
+    ].map((p) => ({ name: p.name, items: p.items.map(([label, hex]) => ({ label, hex })) }));
+    const F = "-apple-system,'SF Pro Text',Inter,sans-serif";
+    const type = [['Large Title 28/34', '28px', '34px', 700, 'Operations overview', '#0F172A', '-0.3px'], ['Title 20/28', '20px', '28px', 700, 'Payment not reflected after transfer', '#0F172A', '0'], ['Headline 15/20', '15px', '20px', 700, 'Duplicate charge on instalment', '#0F172A', '0'],
+      ['Body 14/20', '14px', '20px', 400, 'Transferred THB 12,400 via mobile banking yesterday.', '#334155', '0'], ['Footnote 12/16', '12px', '16px', 400, 'Updated 12 min ago · Business hours 08:00–22:00', '#64748B', '0'], ['Label caps 11/16', '11px', '16px', 700, 'VIEW: · PRIORITY:', '#94A3B8', '.06em']]
+      .map(([name, size, lh, w, sample, color, ls]) => ({ name, size, lh, w, sample, color, ls, fam: F }));
+    const mono = { name: 'Mono ID', size: '12px', lh: '16px', w: 700, sample: '#TK-1042 · DLR-00231 · 1h 12m', color: '#94A3B8', ls: '0', fam: "ui-monospace,'SF Mono',Menlo,monospace" };
+    type.push(mono);
+    const base = { summary: [], palettes, type, priorities: ['Urgent', 'High', 'Normal', 'Low'], statuses: ['New', 'Open', 'Pending', 'Escalated', 'Resolved'], teams: ['Servicing', 'Collections', 'Onboarding Ops', 'Legal'],
+      buttons: [['Primary', '#7C3AED', '#fff', 'plus', 'none'], ['Resolve', '#34C759', '#fff', 'check', 'none'], ['Escalate', '#FF9500', '#fff', 'alert', 'none'], ['Alert Team Lead', '#FF3B30', '#fff', 'alert', 'none'], ['Secondary', '#fff', '#334155', 'filter', '1px solid #E2E8F0']].map(([label, bg, fg, icon, border]) => ({ label, bg, fg, icon, border })),
+      tabs: ['Conversation', 'Properties', 'Time & Activity'].map((label, i) => ({ label, fg: tab === i ? '#7C3AED' : '#64748B', line: tab === i ? '#7C3AED' : 'transparent', go: () => this.setState({ tab: i }) })),
+      segs: ['Support', 'Onboarding'].map((label, i) => ({ label, bg: seg === i ? '#fff' : 'transparent', fg: seg === i ? '#7C3AED' : '#64748B', sh: seg === i ? '0 1px 2px rgba(15,23,42,.12)' : 'none', go: () => this.setState({ seg: i }) })),
+      pills: ['All', 'My open', 'Unassigned', 'Escalated'].map((label, i) => ({ label, bg: pill === i ? '#7C3AED' : 'transparent', fg: pill === i ? '#fff' : '#475569', go: () => this.setState({ pill: i }) })),
+      ctabs: ['Reply', 'Internal note'].map((label, i) => ({ label, fg: ctab === i ? '#7C3AED' : '#64748B', line: ctab === i ? '#7C3AED' : 'transparent', go: () => this.setState({ ctab: i }) })),
+      composerPh: ctab ? 'Add an internal note…' : 'Write a reply…', composerBg: ctab ? '#FFFBEB' : '#fff', composerBtn: ctab ? 'Add Note' : 'Send',
+      panelTf: open ? 'translateX(0)' : 'translateX(24px)', panelOp: open ? 1 : 0, panelBtn: open ? 'Replay slide-in' : 'Opening…',
+      togglePanel: () => { this.setState({ open: false }); setTimeout(() => this.setState({ open: true }), 60); },
+      actions: [['Resolve', '#34C759', 'check'], ['Escalate', '#FF9500', 'alert'], ['Alert Team Lead', '#FF3B30', 'bell']].map(([label, bg, icon]) => ({ label, bg, icon })),
+      ptabs: ['Conversation', 'Properties', 'Time & Activity'].map((label, i) => ({ label, fg: i ? '#64748B' : '#7C3AED', line: i ? 'transparent' : '#7C3AED' })) };
+    if (!m) return { ...base, channels: [], agents: [], rings: [], cards: [], rows: [], cols: [], kpiCards: [], hbars: [], vbars: [], donut: '#E2E8F0', donutTotal: '', legend: [], events: [], p: { id: '', priority: 'Normal', status: 'New', subject: '', team: '', pct: 100, state: 'ok', centre: '', clock: '', label: '', due: '', chIcon: 'mail', channel: '' } };
+    const S = m.SUPPORT_TICKETS, icons = { Email: 'mail', LINE: 'chat', Phone: 'phone', Form: 'form' };
+    const cnt = (k, vs) => m.countBy(S, k, vs), byCh = cnt('channel', m.CHANNELS), bySt = cnt('status', m.STATUSES), byPr = cnt('priority', m.PRIORITIES);
+    const rowOf = (t) => { const v = m.slaView(t), a = m.agentById(t.assignee);
+      return { id: t.id, priority: t.priority, subject: t.subject, pct: v.pct, state: v.state, label: v.label, labelColor: { breached: '#FF3B30', risk: '#E8590C', paused: '#8E8E93' }[v.state] || '#475569', chIcon: icons[t.channel], channel: t.channel,
+        requester: t.requester, status: t.status, team: t.team, ini: a ? a.initials : '–', aColor: a ? a.color : '#CBD5E1', rel: m.relTime(t.updatedAt) }; };
+    const K = m.kpis(S), find = (f) => S.find(f);
+    const grp = (title, o) => ({ title, items: Object.entries(o).map(([label, n]) => ({ label, n })) });
+    const summary = [grp('BY STATUS', bySt), grp('BY PRIORITY', byPr), grp('BY CHANNEL', byCh), grp('SLA', { Breached: K.breached, 'At risk': K.atRisk }), grp('TOTAL', { Tickets: S.length })];
+    const pick = [S[1], S[2], find((t) => m.slaView(t).state === 'paused'), find((t) => m.slaView(t).state === 'risk' && t !== S[2]) || S[4]];
+    const rings = [['ok', 80, '3h'], ['risk', 18, '40m'], ['breached', 0, '!'], ['paused', 60, 'II'], ['done', 100, '✓']].map(([state, pct, centre]) => ({ state, pct, centre, label: { ok: 'On track', risk: 'Under 25% left', breached: 'Breached', paused: 'Paused (Pending)', done: 'Done' }[state] }));
+    const colors = { New: '#94A3B8', Open: '#3B82F6', Pending: '#F2C14E', Escalated: '#8B5CF6', Resolved: '#52B788' };
+    const tints = { New: ['#F8FAFC', '#E2E8F0', '#94A3B8', '#475569'], Open: ['#EFF6FF', '#BFDBFE', '#3B82F6', '#1D4ED8'], Pending: ['#FFFBEB', '#FDE68A', '#F2C14E', '#92400E'], Escalated: ['#FAF5FF', '#E9D5FF', '#8B5CF6', '#6D28D9'], Resolved: ['#F0FDF4', '#BBF7D0', '#52B788', '#15803D'] };
+    const maxSt = Math.max(...Object.values(bySt)), prC = { Urgent: '#F87171', High: '#F97316', Normal: '#3B82F6', Low: '#94A3B8' }, chC = { Email: '#8B5CF6', LINE: '#52B788', Phone: '#F2C14E', Form: '#38BDF8' };
+    let acc = 0; const stops = m.CHANNELS.map((c) => { const a = (acc / S.length) * 100; acc += byCh[c]; return `${chC[c]} ${a}% ${(acc / S.length) * 100}%`; });
+    const t0 = S[2], v0 = m.slaView(t0), a0 = m.agentById(t0.assignee), due = m.fmtTime(new Date(t0.createdAt.getTime() + 0)) && m.fmtTime(new Date(m.NOW.getTime() + Math.max(0, v0.res.left) * 60000 * 0 + v0.res.left * 60000));
+    const th = t0.thread, ev = (type) => th.find((x) => x.type === type);
+    const E = (icon, label, badge, fg, at, text, extra = {}) => ({ icon, label, badge, fg, time: m.fmtStamp(at), text, bubble: '', lock: false, ai: false, ...extra });
+    const events = [
+      E('info', 'System', '#F1F5F9', '#475569', th[0].at, th[0].text), E('zap', 'Rule Applied', '#EDE9FE', '#6D28D9', th[1].at, th[1].text),
+      E('user', 'Customer', '#F1F5F9', '#475569', th[2].at, th[2].text), E('sparkle', 'AI Assistant', '#DBEAFE', '#1D4ED8', th[2].at, 'Suggested reply: “Thank you for your patience. We are checking the disbursement batch and will update you within 2 hours.”', { bubble: 'background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;', ai: true }),
+      E('user', 'Agent · ' + a0.name, '#DCFCE7', '#15803D', ev('agent').at, ev('agent').text), E('lock', 'Internal Note', '#FEF3C7', '#92400E', ev('note').at, ev('note').text, { bubble: 'background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:10px 12px;', lock: true }),
+    ];
+    return { ...base, summary,
+      channels: m.CHANNELS.map((c) => ({ label: c, icon: icons[c], count: byCh[c] })), agents: m.AGENTS.filter((a) => a.role !== 'Admin' && a.role !== 'Legal contact').map((a) => ({ name: a.name, initials: a.initials, color: a.color })), rings,
+      cards: [{ ticket: pick[0], selected: false }, { ticket: pick[1], selected: true }, { ticket: pick[2], selected: false }, { ticket: S[0], selected: false }],
+      rows: S.slice(0, 6).map(rowOf),
+      cols: m.STATUSES.map((s) => ({ label: s.toUpperCase(), count: bySt[s], bg: tints[s][0], bd: tints[s][1], dot: tints[s][2], fg: tints[s][3] })),
+      kpiCards: [['Open tickets', K.open, '↑ ' + K.unassigned + ' unassigned', 'awaiting an owner'], ['SLA breached', K.breached, '↓ vs yesterday', 'first response or resolution'], ['SLA at risk', K.atRisk, '↑ watch list', 'under 25% time left'], ['Resolved', K.resolved, '↑ today', 'of ' + K.total + ' total']].map(([label, value, delta, caption]) => ({ label, value, delta, caption })),
+      hbars: m.STATUSES.map((s) => ({ label: s, n: bySt[s], w: (bySt[s] / maxSt) * 100 + '%', color: colors[s], pct: Math.round((bySt[s] / S.length) * 100) + '%' })),
+      vbars: m.PRIORITIES.map((p) => ({ label: p, n: byPr[p], h: (byPr[p] / 7) * 90 + '%', color: prC[p] })),
+      donut: `conic-gradient(${stops.join(',')})`, donutTotal: S.length, legend: m.CHANNELS.map((c) => ({ label: c, n: byCh[c], color: chC[c] })), events,
+      p: { id: t0.id, priority: t0.priority, status: t0.status, subject: t0.subject, team: t0.team, pct: v0.pct, state: v0.state, centre: v0.centre, clock: v0.clock, label: v0.label, due, chIcon: icons[t0.channel], channel: t0.channel } };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="height:100%;overflow-y:auto;overflow-x:hidden;background:#F8FAFC;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+<div style="padding:24px 32px 40px;display:flex;flex-direction:column;gap:24px;box-sizing:border-box;max-width:1600px;margin:0 auto">
+  <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div style="flex:1;min-width:240px"><div style="font:600 20px/28px var(--font)">{{ title }}</div><div style="font:400 14px/20px var(--font);color:#64748B">{{ subtitle }}</div></div>
+    <div style="display:flex;align-items:center;gap:8px;font:400 12px/16px var(--font);color:#64748B;white-space:nowrap">Last updated: {{ updated }}<span style="width:8px;height:8px;border-radius:50%;background:#34C759"></span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="display:flex;background:#F1F5F9;border-radius:10px;padding:2px;gap:2px"><sc-for list="{{ ranges }}" as="g" hint-placeholder-count="3"><button onClick="{{ g.go }}" style="height:28px;padding:0 14px;border:0;border-radius:8px;cursor:pointer;font:600 13px/20px var(--font);background:{{ g.bg }};color:{{ g.fg }};box-shadow:{{ g.sh }};transition:all 150ms ease">{{ g.label }}</button></sc-for></div>
+    <sc-for list="{{ filters }}" as="f" hint-placeholder-count="2"><label style="display:flex;align-items:center;gap:8px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">{{ f.label }}<select onChange="{{ f.change }}" style="height:32px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;padding:0 8px;font:500 13px/20px var(--font);color:#334155;outline:0;letter-spacing:0"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.v }}</option></sc-for></select></label></sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat({{ kpiCols }},minmax(0,1fr));gap:24px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="font:500 13px/20px var(--font);color:#64748B">{{ k.label }}</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:8px"><div style="font:600 28px/34px var(--font);font-variant-numeric:tabular-nums;white-space:nowrap">{{ k.value }}</div>
+          <svg viewBox="0 0 100 32" preserveAspectRatio="none" style="width:72px;height:28px;flex:none;overflow:visible"><polyline points="{{ k.spark }}" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" style="vector-effect:non-scaling-stroke"></polyline></svg></div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="background:{{ k.dBg }};color:{{ k.dFg }};border-radius:999px;padding:0 8px;font:600 12px/20px var(--font);white-space:nowrap">{{ k.delta }}</span><span style="font:400 12px/16px var(--font);color:#64748B">vs prev. period</span></div>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ isLead }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:24px">
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px">
+      <div style="grid-column:span 8;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap"><div><div style="font:600 14px/20px var(--font)">Ticket volume</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ volSub }}</div></div>
+          <div style="margin-left:auto;display:flex;gap:12px;flex-wrap:wrap"><sc-for list="{{ legendV }}" as="l" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:6px;font:500 12px/16px var(--font);color:#475569"><span style="width:10px;height:10px;border-radius:3px;background:{{ l.color }}"></span>{{ l.name }}</span></sc-for></div></div>
+        <div style="position:relative;height:200px;margin-left:28px">
+          <sc-for list="{{ grid }}" as="g" hint-placeholder-count="5"><div style="position:absolute;left:0;right:0;top:{{ g.top }};height:1px;background:#F1F5F9"></div></sc-for>
+          <sc-for list="{{ grid }}" as="g" hint-placeholder-count="5"><span style="position:absolute;left:-28px;top:{{ g.top }};transform:translateY(-50%);width:22px;text-align:right;font:400 11px/16px var(--font);color:#64748B;font-variant-numeric:tabular-nums">{{ g.label }}</span></sc-for>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+            <sc-for list="{{ lines }}" as="l" hint-placeholder-count="4"><polyline points="{{ l.points }}" fill="none" stroke="{{ l.color }}" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" style="vector-effect:non-scaling-stroke"></polyline></sc-for>
+          </svg>
+          <sc-if value="{{ tip.show }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:0;bottom:0;left:{{ tip.x }};width:1px;background:#DDD6FE"></div>
+            <div style="position:absolute;top:8px;left:{{ tip.x }};transform:{{ tip.tf }};background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.12);padding:8px 12px;z-index:5;pointer-events:none;min-width:110px"><div style="font:600 12px/16px var(--font);margin-bottom:4px">{{ tip.title }}</div><sc-for list="{{ tip.rows }}" as="r" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:6px;font:500 12px/20px var(--font);color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.color }}"></span>{{ r.name }}<span style="margin-left:auto;font-weight:700;color:#0F172A;padding-left:12px">{{ r.n }}</span></div></sc-for></div></sc-if>
+          <div style="position:absolute;inset:0;display:flex"><sc-for list="{{ hits }}" as="h" hint-placeholder-count="7"><div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="flex:1"></div></sc-for></div>
+        </div>
+        <div style="display:flex;margin-left:28px"><sc-for list="{{ xlabels }}" as="x" hint-placeholder-count="7"><span style="flex:1;text-align:center;font:400 11px/16px var(--font);color:#64748B;white-space:nowrap;overflow:hidden">{{ x }}</span></sc-for></div>
+      </div>
+      <div style="grid-column:span 4;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">Backlog by status</div><div style="font:400 12px/16px var(--font);color:#64748B">Current tickets. Click a bar to open the Inbox filtered.</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;justify-content:center;flex:1"><sc-for list="{{ backlog }}" as="b" hint-placeholder-count="5"><button onClick="{{ b.go }}" style="display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;cursor:pointer;text-align:left" style-hover="opacity:.85"><span style="width:72px;font:500 13px/20px var(--font);color:#475569">{{ b.label }}</span><span style="flex:1;height:24px;border-radius:12px;background:#F1F5F9;display:block"><span style="display:block;width:{{ b.w }};min-width:24px;height:100%;border-radius:12px;background:{{ b.color }};transition:width 200ms ease"></span></span><span style="width:24px;text-align:right;font:700 13px/20px var(--font);font-variant-numeric:tabular-nums">{{ b.n }}</span></button></sc-for></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px">
+      <div style="grid-column:span 4;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">SLA health</div><div style="font:400 12px/16px var(--font);color:#64748B">Open tickets. Click to see SLA alerts.</div></div>
+        <button onClick="{{ goSla }}" style="display:flex;align-items:center;gap:20px;border:0;background:none;padding:0;cursor:pointer;text-align:left;flex:1">
+          <span style="position:relative;width:120px;height:120px;flex:none"><span style="display:block;width:120px;height:120px;border-radius:50%;background:{{ donut.bg }}"></span><span style="position:absolute;inset:20px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:600 28px/32px var(--font);font-variant-numeric:tabular-nums">{{ donut.total }}</span><span style="font:400 11px/14px var(--font);color:#64748B">open</span></span></span>
+          <span style="display:flex;flex-direction:column;gap:8px;flex:1"><sc-for list="{{ donut.items }}" as="l" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#475569"><span style="width:10px;height:10px;border-radius:50%;background:{{ l.color }}"></span>{{ l.label }}<span style="margin-left:auto;font-weight:700;color:#0F172A">{{ l.n }}</span></span></sc-for></span>
+        </button>
+      </div>
+      <div style="grid-column:span 4;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">By priority</div><div style="font:400 12px/16px var(--font);color:#64748B">Tickets created in the period</div></div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-around;height:128px"><sc-for list="{{ prio }}" as="b" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><span style="font:700 13px/16px var(--font)">{{ b.n }}</span><div style="width:40px;height:{{ b.h }};min-height:4px;border-radius:8px 8px 0 0;background:{{ b.color }};transition:height 200ms ease"></div><span style="font:500 12px/16px var(--font);color:#475569">{{ b.label }}</span></div></sc-for></div>
+      </div>
+      <div style="grid-column:span 4;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">CSAT</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ csat.sub }}</div></div>
+        <div style="display:flex;align-items:center;gap:20px;flex:1"><div><div style="font:600 28px/34px var(--font);font-variant-numeric:tabular-nums">{{ csat.avg }}</div><div style="font:400 12px/16px var(--font);color:#64748B">out of 5</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><sc-for list="{{ csat.dist }}" as="d" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:8px"><span style="width:14px;font:500 12px/16px var(--font);color:#64748B">{{ d.star }}</span><span style="flex:1;height:8px;border-radius:4px;background:#F1F5F9"><span style="display:block;width:{{ d.w }};height:100%;border-radius:4px;background:#8B5CF6"></span></span><span style="width:24px;text-align:right;font:600 12px/16px var(--font);font-variant-numeric:tabular-nums">{{ d.n }}</span></div></sc-for></div></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px">
+      <div style="grid-column:span 7;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">Agent workload</div><div style="font:400 12px/16px var(--font);color:#64748B">Current tickets; response and SLA for the selected period</div></div>
+        <div style="display:grid;grid-template-columns:minmax(110px,1.5fr) 44px 64px 76px 80px minmax(80px,1fr);gap:8px;padding:8px 0;border-bottom:1px solid #F1F5F9;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B"><span>AGENT</span><span>OPEN</span><span>PENDING</span><span>ESCALATED</span><span>AVG 1ST RESP</span><span>SLA %</span></div>
+        <sc-for list="{{ agents }}" as="a" hint-placeholder-count="5"><div style="min-height:56px;box-sizing:border-box;display:grid;grid-template-columns:minmax(110px,1.5fr) 44px 64px 76px 80px minmax(80px,1fr);gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #F8FAFC;font:500 13px/20px var(--font);font-variant-numeric:tabular-nums"><span style="display:flex;align-items:center;gap:8px"><dc-import name="Avatar" initials="{{ a.ini }}" color="{{ a.color }}" size="24" hint-size="24px,24px"></dc-import>{{ a.name }}</span><span>{{ a.open }}</span><span>{{ a.pending }}</span><span>{{ a.escalated }}</span><span>{{ a.fr }}</span><span style="display:flex;align-items:center;gap:8px"><span style="flex:1;height:6px;border-radius:3px;background:#F1F5F9"><span style="display:block;width:{{ a.w }};height:100%;border-radius:3px;background:{{ a.color2 }}"></span></span><span style="width:34px;text-align:right;font-weight:600">{{ a.sla }}</span></span></div></sc-for>
+      </div>
+      <div style="grid-column:span 5;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px"><div><div style="font:600 14px/20px var(--font)">Needs attention</div><div style="font:400 12px/16px var(--font);color:#64748B">Breached and at-risk tickets</div></div><span style="margin-left:auto;min-width:24px;height:24px;border-radius:12px;background:#FEE2E2;color:#B91C1C;display:inline-flex;align-items:center;justify-content:center;font:700 12px/1 var(--font)">{{ attentionCount }}</span></div>
+        <sc-if value="{{ noAttention }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 0;text-align:center;font:500 13px/20px var(--font);color:#64748B">No SLA alerts right now</div></sc-if>
+        <sc-for list="{{ attention }}" as="r" hint-placeholder-count="4"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:10px;border:0;background:none;border-radius:10px;padding:8px;cursor:pointer;text-align:left;width:100%" style-hover="background:#F8FAFC"><span style="min-width:0;flex:1;display:flex;flex-direction:column"><span style="font:600 13px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.subject }}</span><span style="font:400 12px/16px var(--font);color:#64748B"><span style="font-family:var(--mono);font-weight:700;color:#64748B">{{ r.id }}</span> · {{ r.requester }}</span></span><dc-import name="SlaChip" ticket="{{ r.ticket }}" hint-size="150px,28px"></dc-import></button></sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px">
+      <div style="grid-column:span 6;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">Verification queue</div><div style="font:400 12px/16px var(--font);color:#64748B">Risk-based checks still open on contract changes</div></div>
+        <sc-if value="{{ noVerify }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 0;text-align:center;font:500 13px/20px var(--font);color:#64748B">Nothing waiting for verification</div></sc-if>
+        <sc-for list="{{ verify }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:10px;border:0;background:none;border-radius:10px;padding:8px;cursor:pointer;text-align:left;width:100%" style-hover="background:#F8FAFC"><dc-import name="Pill" kind="tone" value="{{ r.tone }}" label="{{ r.level }}" hint-size="64px,20px"></dc-import><span style="min-width:0;flex:1;display:flex;flex-direction:column"><span style="font:600 13px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.subject }}</span><span style="font:400 12px/16px var(--font);color:#64748B"><span style="font-family:var(--mono);font-weight:700;color:#64748B">{{ r.id }}</span> · {{ r.requester }}</span></span><span style="font:600 12px/16px var(--font);color:#475569;white-space:nowrap">{{ r.done }} checks</span></button></sc-for>
+      </div>
+      <div style="grid-column:span 6;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">Waiting on vendor</div><div style="font:400 12px/16px var(--font);color:#64748B">LockSure response timer, 24 h target</div></div>
+        <sc-if value="{{ noVendor }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 0;text-align:center;font:500 13px/20px var(--font);color:#64748B">No tickets waiting on a vendor</div></sc-if>
+        <sc-for list="{{ vendor }}" as="r" hint-placeholder-count="2"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:10px;border:0;background:none;border-radius:10px;padding:8px;cursor:pointer;text-align:left;width:100%" style-hover="background:#F8FAFC"><span style="min-width:0;flex:1;display:flex;flex-direction:column"><span style="font:600 13px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.subject }}</span><span style="font:400 12px/16px var(--font);color:#64748B"><span style="font-family:var(--mono);font-weight:700;color:#64748B">{{ r.id }}</span> · {{ r.requester }}</span></span><span style="display:flex;flex-direction:column;gap:4px;width:110px"><span style="font:600 12px/16px var(--font);color:{{ r.color }};text-align:right;font-variant-numeric:tabular-nums">{{ r.text }}</span><span style="height:6px;border-radius:3px;background:#F1F5F9"><span style="display:block;width:{{ r.w }};height:100%;border-radius:3px;background:{{ r.color }}"></span></span></span></button></sc-for>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px"><div><div style="font:600 14px/20px var(--font)">Self-service</div><div style="font:400 12px/16px var(--font);color:#64748B">Knowledge Base and customer Portal</div></div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px"><sc-for list="{{ ss }}" as="k" hint-placeholder-count="4"><div><div style="font:500 12px/16px var(--font);color:#64748B">{{ k.label }}</div><div style="font:600 24px/32px var(--font);font-variant-numeric:tabular-nums">{{ k.value }}</div></div></sc-for></div></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isAgent }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px">
+      <div style="grid-column:span 7;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">My queue</div><div style="font:400 12px/16px var(--font);color:#64748B">Sorted by SLA urgency</div></div>
+        <sc-if value="{{ noQueue }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 0;text-align:center;font:500 13px/20px var(--font);color:#64748B">Your queue is empty</div></sc-if>
+        <sc-for list="{{ queue }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:10px;border:0;background:none;border-radius:10px;padding:8px;cursor:pointer;text-align:left;width:100%" style-hover="background:#F8FAFC"><dc-import name="Pill" kind="priority" value="{{ r.priority }}" hint-size="56px,20px"></dc-import><span style="min-width:0;flex:1;display:flex;flex-direction:column"><span style="font:600 13px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.subject }}</span><span style="font:400 12px/16px var(--font);color:#64748B"><span style="font-family:var(--mono);font-weight:700;color:#64748B">{{ r.id }}</span> · {{ r.requester }}</span></span><dc-import name="Pill" kind="status" value="{{ r.status }}" hint-size="64px,20px"></dc-import><dc-import name="SlaChip" ticket="{{ r.ticket }}" hint-size="150px,28px"></dc-import></button></sc-for>
+      </div>
+      <div style="grid-column:span 5;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div><div style="font:600 14px/20px var(--font)">Today</div><div style="font:400 12px/16px var(--font);color:#64748B">My replies, notes and logged time</div></div>
+        <sc-if value="{{ noToday }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 0;text-align:center;font:500 13px/20px var(--font);color:#64748B">No activity yet today</div></sc-if>
+        <sc-for list="{{ today }}" as="e" hint-placeholder-count="4"><div style="display:flex;gap:12px;padding:8px 0;min-height:56px;box-sizing:border-box;align-items:center;border-bottom:1px solid #F8FAFC"><span style="width:28px;height:28px;border-radius:50%;background:{{ e.bg }};color:{{ e.fg }};display:inline-flex;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{ e.icon }}" size="14" hint-size="14px,14px"></dc-import></span><span style="flex:1;min-width:0;font:400 13px/20px var(--font);color:#334155"><span style="font-weight:600;color:#0F172A">{{ e.title }}</span> <span style="font-family:var(--mono);font-size:11px;color:#64748B">{{ e.id }}</span><span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#64748B">{{ e.text }}</span></span><span style="font:400 12px/16px var(--font);color:#64748B;white-space:nowrap">{{ e.time }}</span></div></sc-for>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, hi: null, tick: 0 };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); this.iv = setInterval(() => this.setState((x) => ({ tick: x.tick + 1 })), 1000); }
+  componentWillUnmount() { this.unsub && this.unsub(); clearInterval(this.iv); }
+  renderVals() {
+    const { m, s, hi } = this.state, nop = () => {};
+    const blank = { ss: [], title: '', subtitle: '', updated: '', ranges: [], filters: [], kpiCols: 5, kpis: [], isLead: true, isAgent: false, volSub: '', legendV: [], grid: [], lines: [], hits: [], xlabels: [], tip: { show: false, x: '0%', tf: '', title: '', rows: [] }, backlog: [], goSla: nop, donut: { bg: '#E2E8F0', total: '', items: [] }, prio: [], csat: { sub: '', avg: '', dist: [] }, agents: [], attention: [], attentionCount: 0, noAttention: false, verify: [], noVerify: false, vendor: [], noVendor: false, queue: [], noQueue: false, today: [], noToday: false };
+    if (!m || !s) return blank;
+    const st = m.store, D = m.dashboard(s), f = s.dash, isLead = s.role === 'Team Lead', meA = m.agentById(m.me(s));
+    const fmtM = (x) => (x == null ? '—' : x >= 60 ? Math.floor(x / 60) + 'h ' + String(Math.round(x % 60)).padStart(2, '0') + 'm' : Math.round(x) + 'm');
+    const GOOD = ['#DCFCE7', '#15803D'], BAD = ['#FEE2E2', '#B91C1C'], NEUT = ['#F1F5F9', '#64748B'];
+    const spark = (arr) => { const lo = Math.min(...arr), hi2 = Math.max(...arr), rg = hi2 - lo || 1; return arr.map((v, i) => (i / (arr.length - 1)) * 100 + ',' + (28 - ((v - lo) / rg) * 24 - 2)).join(' '); };
+    const dl = (o, fmtD, digits) => { if (o.cur == null || o.prev == null) return { delta: '—', c: NEUT }; const d = o.cur - o.prev, txt = fmtD(d); if (Math.abs(d) < 1e-9) return { delta: '→ 0', c: NEUT }; return { delta: (d > 0 ? '↑ ' : '↓ ') + txt, c: (d < 0) === o.lowerBetter ? GOOD : BAD }; };
+    const pct = (o) => (d) => (o.prev ? Math.abs(Math.round((d / o.prev) * 100)) + '%' : '—');
+    const K = D.kpi, mk = (label, value, o, fd) => { const x = dl(o, fd); return { label, value, spark: spark(o.spark), delta: x.delta, dBg: x.c[0], dFg: x.c[1] }; };
+    const mine = D.mine;
+    let kpis;
+    if (isLead) kpis = [mk('Open tickets', K.open.cur, K.open, (d) => Math.abs(d)), mk('SLA compliance', K.compliance.cur == null ? '—' : Math.round(K.compliance.cur) + '%', K.compliance, (d) => Math.abs(Math.round(d)) + ' pts'),
+      mk('Avg first response', fmtM(K.fr.cur), K.fr, pct(K.fr)), mk('Avg resolution time', fmtM(K.res.cur), K.res, pct(K.res)), mk('CSAT score', K.csat.cur == null ? '—' : K.csat.cur.toFixed(1), K.csat, (d) => Math.abs(d).toFixed(1))];
+    else kpis = [{ label: 'My open', value: mine.open, spark: spark(K.open.spark), delta: 'live', dBg: NEUT[0], dFg: NEUT[1] }, { label: 'My SLA at risk', value: mine.alerts, spark: spark(K.compliance.spark), delta: mine.alerts ? 'needs action' : 'all clear', dBg: mine.alerts ? BAD[0] : GOOD[0], dFg: mine.alerts ? BAD[1] : GOOD[1] },
+      { label: 'My avg first response', value: fmtM(mine.fr), spark: spark(K.fr.spark), delta: '—', dBg: NEUT[0], dFg: NEUT[1] }, { label: 'My CSAT', value: mine.csat == null ? '—' : mine.csat.toFixed(1), spark: spark(K.csat.spark), delta: '—', dBg: NEUT[0], dFg: NEUT[1] }];
+    const chip = (label, key, opts) => ({ label, opts: opts.map((v) => ({ v, sel: f[key] === v })), change: (e) => st.setDash({ [key]: e.target.value }) });
+    const ranges = [['today', 'Today'], ['7', '7 days'], ['30', '30 days']].map(([k, label]) => ({ label, bg: f.range === k ? '#fff' : 'transparent', fg: f.range === k ? '#7C3AED' : '#64748B', sh: f.range === k ? '0 1px 2px rgba(15,23,42,.12)' : 'none', go: () => st.setDash({ range: k }) }));
+    const filters = isLead ? [chip('TEAM', 'team', ['All', ...m.TEAMS]), chip('CHANNEL', 'channel', ['All', ...m.CHANNELS])] : [chip('CHANNEL', 'channel', ['All', ...m.CHANNELS])];
+    const out = { ...blank, title: isLead ? 'Operations dashboard' : 'My dashboard', subtitle: isLead ? 'Live overview of support performance, SLA health and workload' : 'Your queue, SLA risk and activity for ' + meA.name,
+      updated: m.fmtStamp(D.now), ranges, filters, kpiCols: isLead ? 5 : 4, kpis, isLead, isAgent: !isLead };
+    const go = (id) => () => st.openTicket(id);
+    if (isLead) {
+      const CH = { Email: '#6D28D9', LINE: '#8B5CF6', Phone: '#A78BFA', Form: '#C4B5FD' }, N = D.volume.length;
+      const maxV = Math.max(4, ...D.volume.map((v) => Math.max(...m.CHANNELS.map((c) => v.counts[c])))), top = Math.ceil(maxV / 4) * 4;
+      { const ks = m.kbStats(s); out.ss = [['Published articles', ks.published], ['Article views', ks.views.toLocaleString('en-US')], ['Helpful rate', ks.helpful == null ? '—' : ks.helpful + '%'], ['Requests from Portal', m.portalCount(s)]].map(([label, value]) => ({ label, value })); }
+      out.volSub = f.range === 'today' ? 'Created today, by hour' : 'Created per day, last ' + f.range + ' days';
+      out.legendV = m.CHANNELS.map((c) => ({ name: c, color: CH[c] }));
+      out.grid = [0, 1, 2, 3, 4].map((i) => ({ top: i * 25 + '%', label: String(Math.round(top - (top / 4) * i)) }));
+      out.lines = m.CHANNELS.map((c) => ({ color: CH[c], points: D.volume.map((v, i) => ((i + 0.5) / N) * 100 + ',' + (100 - (v.counts[c] / top) * 100)).join(' ') }));
+      out.xlabels = D.volume.map((v, i) => (N > 14 && i % 5 !== 0 ? '' : v.label));
+      out.hits = D.volume.map((v, i) => ({ enter: () => this.setState({ hi: i }), leave: () => this.setState({ hi: null }) }));
+      const hv = hi != null && D.volume[hi];
+      out.tip = hv ? { show: true, x: ((hi + 0.5) / N) * 100 + '%', tf: hi > N / 2 ? 'translateX(calc(-100% - 8px))' : 'translateX(8px)', title: hv.label, rows: m.CHANNELS.map((c) => ({ name: c, color: CH[c], n: hv.counts[c] })) } : blank.tip;
+      const SC = { New: '#8E8E93', Open: '#007AFF', Pending: '#FF9500', Escalated: '#AF52DE', Resolved: '#34C759' }, mxB = Math.max(1, ...Object.values(D.backlog));
+      out.backlog = m.STATUSES.map((x) => ({ label: x, n: D.backlog[x], w: (D.backlog[x] / mxB) * 100 + '%', color: SC[x], go: () => st.navInbox({ view: 'All', status: x }) }));
+      const tot = D.sla.onTrack + D.sla.risk + D.sla.breached, sl = [['On track', D.sla.onTrack, '#34C759'], ['At risk', D.sla.risk, '#FF9500'], ['Breached', D.sla.breached, '#FF3B30']];
+      let acc = 0; const stops = tot ? sl.map(([, n, c]) => { const a = (acc / tot) * 100; acc += n; return `${c} ${a}% ${(acc / tot) * 100}%`; }) : ['#E2E8F0 0% 100%'];
+      out.donut = { bg: `conic-gradient(${stops.join(',')})`, total: tot, items: sl.map(([label, n, color]) => ({ label, n, color })) }; out.goSla = () => st.navInbox({ view: 'SLA alerts' });
+      const PC = { Urgent: '#FF3B30', High: '#FF9500', Normal: '#007AFF', Low: '#8E8E93' }, mxP = Math.max(1, ...Object.values(D.priority));
+      out.prio = m.PRIORITIES.map((p) => ({ label: p, n: D.priority[p], h: (D.priority[p] / mxP) * 80 + '%', color: PC[p] }));
+      const mxC = Math.max(1, ...D.csat.dist);
+      out.csat = { avg: D.csat.avg == null ? '—' : D.csat.avg.toFixed(1), sub: D.csat.n + ' survey responses in period', dist: [5, 4, 3, 2, 1].map((n) => ({ star: n, n: D.csat.dist[n - 1], w: (D.csat.dist[n - 1] / mxC) * 100 + '%' })) };
+      out.agents = D.agents.map((a) => ({ ini: a.agent.initials, color: a.agent.color, name: a.agent.name, open: a.open, pending: a.pending, escalated: a.escalated, fr: fmtM(a.fr), sla: a.compliance == null ? '—' : Math.round(a.compliance) + '%', w: (a.compliance || 0) + '%', color2: a.compliance == null ? '#CBD5E1' : a.compliance >= 85 ? '#34C759' : a.compliance >= 70 ? '#FF9500' : '#FF3B30' }));
+      out.attention = D.attention.map((t) => ({ id: t.id, subject: t.subject, requester: t.requester, ticket: t, go: go(t.id) })); out.attentionCount = D.attention.length; out.noAttention = D.attention.length === 0;
+      out.verify = D.verify.map((t) => ({ id: t.id, subject: t.subject, requester: t.requester, level: t.verify.level, tone: { High: 'red', Medium: 'amber', Low: 'green' }[t.verify.level], done: t.verify.checks.filter(Boolean).length + '/' + t.verify.checks.length, go: go(t.id) })); out.noVerify = D.verify.length === 0;
+      out.vendor = D.vendor.map(({ t, v }) => ({ id: t.id, subject: t.subject, requester: t.requester, text: v ? (v.left < 0 ? m.fmtClock(v.left) + ' over' : m.fmtClock(v.left) + ' left') : '—', w: (v ? v.pct : 0) + '%', color: v ? { ok: '#34C759', risk: '#FF9500', breached: '#FF3B30' }[v.state] : '#CBD5E1', go: go(t.id) })); out.noVendor = D.vendor.length === 0;
+    } else {
+      out.queue = mine.queue.map((t) => ({ id: t.id, subject: t.subject, requester: t.requester, priority: t.priority, status: t.status, ticket: t, go: go(t.id) })); out.noQueue = mine.queue.length === 0;
+      const meId = m.me(s), today = D.now.toDateString(), ev = [];
+      s.tickets.forEach((t) => t.thread.forEach((e) => { if (e.by === meId && (e.type === 'agent' || e.type === 'note') && e.at.toDateString() === today) ev.push({ at: e.at, id: t.id, title: e.type === 'agent' ? 'Replied' : 'Internal note', icon: e.type === 'agent' ? 'send' : 'lock', bg: e.type === 'agent' ? '#DCFCE7' : '#FEF3C7', fg: e.type === 'agent' ? '#15803D' : '#92400E', text: e.text }); }));
+      s.timeEntries.filter((e) => e.agent === meId && e.date === '2026-10-06').forEach((e, i) => ev.push({ at: new Date(D.now - (i + 1) * 36e5), id: e.ticketId, title: 'Logged ' + e.minutes + ' min', icon: 'clock', bg: '#EDE9FE', fg: '#6D28D9', text: e.note }));
+      ev.sort((a, b) => b.at - a.at); out.today = ev.slice(0, 7).map((e) => ({ ...e, time: m.fmtTime(e.at) })); out.noToday = ev.length === 0;
+    }
+    return out;
+  }
+}
+</script>
+</body>
+</html>

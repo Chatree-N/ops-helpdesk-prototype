@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="height:100%;overflow-y:auto;background:#F8FAFC;font-family:var(--font);color:#0F172A"><div style="max-width:880px;padding:24px 32px 48px;display:flex;flex-direction:column;gap:24px">
+  <div><div style="font:600 20px/28px var(--font)">Help Center</div><div style="font:400 14px/20px var(--font);color:#64748B">Quick tips and keyboard shortcuts for this demo.</div></div>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+    <sc-for list="{{ tips }}" as="t" hint-placeholder-count="4"><div style="background:#fff;border-radius:16px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05)"><div style="font:600 14px/20px var(--font)">{{ t.title }}</div><div style="font:400 14px/20px var(--font);color:#475569;margin-top:4px;text-wrap:pretty">{{ t.text }}</div></div></sc-for>
+  </div>
+  <div style="background:#fff;border-radius:16px;padding:8px 20px 12px;box-shadow:0 1px 2px rgba(15,18,32,.05)">
+    <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;padding:12px 0 4px">KEYBOARD SHORTCUTS</div>
+    <sc-for list="{{ keys }}" as="k" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px;height:44px;border-top:1px solid #F1F5F9"><span style="display:flex;gap:4px;width:120px"><sc-for list="{{ k.caps }}" as="c" hint-placeholder-count="2"><span style="min-width:24px;height:24px;box-sizing:border-box;padding:0 6px;border:1px solid #E2E8F0;border-bottom-width:2px;border-radius:6px;background:#F8FAFC;font:600 12px/22px var(--mono);text-align:center">{{ c }}</span></sc-for></span><span style="font:400 14px/20px var(--font);color:#334155">{{ k.text }}</span></div></sc-for>
+  </div>
+  <div><button onClick="{{ tour }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Take the tour</button></div>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null };
+  componentDidMount() { import('./store.js').then((m) => this.setState({ m })); }
+  renderVals() {
+    const m = this.state.m;
+    return { tour: () => m && m.store.requestTour(),
+      tips: [['Switch role', 'Open the avatar menu (bottom of the rail). Agents see their own queue; Team Leads see everyone and can edit Settings.'], ['Switch workspace', 'Use Support | Onboarding in the header. Onboarding tracks dealers through five stages.'], ['Reset the demo', 'Avatar menu → Reset demo data restores every ticket and dealer to the starting numbers.'], ['Move work', 'Drag a Kanban card, or use the ··· menu → Move to. Onboarding moves are blocked until the stage rules are met.']].map(([title, text]) => ({ title, text })),
+      keys: [[['/'], 'Focus search'], [['n'], 'New ticket'], [['g', 'i'], 'Go to Inbox'], [['g', 'k'], 'Go to Kanban'], [['g', 'd'], 'Go to Dashboard'], [['Esc'], 'Close panel, popover or modal']].map(([caps, text]) => ({ caps, text })) };
+  }
+}
+</script>
+</body>
+</html>

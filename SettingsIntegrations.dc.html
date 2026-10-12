@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}</style></helmet>
+<div style="display:flex;flex-direction:column;gap:24px;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+  <div><div style="font:600 20px/28px var(--font);letter-spacing:-.2px">Integrations</div><div style="font:400 14px/20px var(--font);color:#64748B">Channels that create tickets, plus developer access.</div></div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">CONNECTED CHANNELS</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <sc-for list="{{ channels }}" as="c" hint-placeholder-count="4">
+        <div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;border-radius:12px;background:{{ c.tile }};color:#fff;display:inline-flex;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{ c.icon }}" size="20" hint-size="20px,20px"></dc-import></span><div style="min-width:0;flex:1"><div style="font:600 15px/20px var(--font)">{{ c.name }}</div><div style="font:400 13px/20px var(--font);color:#64748B">{{ c.desc }}</div></div></div>
+          <div style="display:flex;align-items:center;gap:8px"><dc-import name="Pill" kind="tone" value="{{ c.tone }}" label="{{ c.status }}" hint-size="80px,20px"></dc-import><span style="font:400 12px/16px var(--font);color:#64748B">{{ c.count }}</span>
+            <sc-if value="{{ c.isForm }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.portal }}" style="margin-left:auto;height:32px;padding:0 12px;border:1px solid #DDD6FE;border-radius:10px;background:#F5F3FF;color:#6D28D9;font:600 13px/20px var(--font);cursor:pointer;white-space:nowrap">Open portal</button></sc-if><span title="{{ tip }}" style="margin-left:{{ c.gap }};display:inline-flex"><button role="switch" aria-label="Toggle {{ c.name }}" onClick="{{ c.toggle }}" disabled="{{ locked }}" style="width:40px;height:24px;border-radius:12px;border:0;background:{{ c.bg }};position:relative;cursor:{{ cursor }};opacity:{{ op }};padding:0;transition:background 150ms ease"><span style="position:absolute;top:2px;left:{{ c.knob }};width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.3);transition:left 150ms ease"></span></button></span></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">AVAILABLE</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <sc-for list="{{ available }}" as="c" hint-placeholder-count="3">
+        <div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;border-radius:12px;background:{{ c.tile }};color:#fff;display:inline-flex;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{ c.icon }}" size="20" hint-size="20px,20px"></dc-import></span><div style="min-width:0;flex:1"><div style="font:600 15px/20px var(--font)">{{ c.name }}</div><div style="font:400 13px/20px var(--font);color:#64748B">{{ c.desc }}</div></div></div>
+          <div style="display:flex;align-items:center;gap:8px"><dc-import name="Pill" kind="tone" value="slate" label="Available" hint-size="80px,20px"></dc-import><span title="{{ tip }}" style="margin-left:auto;display:inline-flex"><button onClick="{{ c.connect }}" disabled="{{ locked }}" style="height:32px;padding:0 14px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 13px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Connect</button></span></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">DEVELOPER</div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start">
+      <div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;border-radius:12px;background:#475569;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="lock" size="20" hint-size="20px,20px"></dc-import></span><div><div style="font:600 15px/20px var(--font)">API keys</div><div style="font:400 13px/20px var(--font);color:#64748B">Server-to-server access. Demo key only.</div></div></div>
+        <div style="font:500 13px/20px var(--mono);background:#F8FAFC;border-radius:10px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ keyText }}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button onClick="{{ reveal }}" style="height:32px;padding:0 14px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 13px/20px var(--font);cursor:pointer">{{ revealLabel }}</button><button onClick="{{ copyKey }}" style="height:32px;padding:0 14px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 13px/20px var(--font);cursor:pointer">Copy</button><span title="{{ tip }}" style="display:inline-flex"><button onClick="{{ regen }}" disabled="{{ locked }}" style="height:32px;padding:0 14px;border:1px solid #FECACA;border-radius:10px;background:#FEF2F2;color:#B91C1C;font:600 13px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Regenerate</button></span></div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;border-radius:12px;background:#7C3AED;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="link" size="20" hint-size="20px,20px"></dc-import></span><div style="flex:1"><div style="font:600 15px/20px var(--font)">Webhooks</div><div style="font:400 13px/20px var(--font);color:#64748B">Fictional endpoints</div></div><span title="{{ tip }}" style="display:inline-flex"><button onClick="{{ openWh }}" disabled="{{ locked }}" style="height:32px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Add webhook</button></span></div>
+        <sc-for list="{{ hooks }}" as="w" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;min-height:56px;box-sizing:border-box;border-top:1px solid #F1F5F9"><div style="flex:1;min-width:0"><div style="font:500 13px/20px var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ w.url }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ w.event }} · {{ w.status }}</div></div>
+            <button onClick="{{ w.test }}" style="height:32px;padding:0 10px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;color:#334155;font:600 12px/16px var(--font);cursor:pointer">Test</button>
+            <span title="{{ tip }}" style="display:inline-flex"><button role="switch" aria-label="Toggle webhook" onClick="{{ w.toggle }}" disabled="{{ locked }}" style="width:36px;height:22px;border-radius:11px;border:0;background:{{ w.bg }};position:relative;cursor:{{ cursor }};opacity:{{ op }};padding:0"><span style="position:absolute;top:2px;left:{{ w.knob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.3);transition:left 150ms ease"></span></button></span></div>
+        </sc-for>
+        <sc-if value="{{ hasLog }}" hint-placeholder-val="{{ false }}"><div style="background:#F8FAFC;border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:2px"><sc-for list="{{ log }}" as="l" hint-placeholder-count="2"><div style="font:500 12px/16px var(--mono);color:#334155">{{ l.time }} POST {{ l.event }} → <span style="color:#15803D;font-weight:700">{{ l.status }}</span> ({{ l.ms }} ms)</div></sc-for></div></sc-if>
+      </div>
+    </div>
+  </div>
+  <div style="font:400 12px/16px var(--font);color:#64748B;padding-top:8px;border-top:1px solid #E2E8F0">Product names are used for illustration only; this is a fictional demo.</div>
+  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(15,23,42,.35);z-index:80;display:flex;align-items:center;justify-content:center">
+      <div onClick="{{ stop }}" style="width:440px;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,.3);padding:24px;display:flex;flex-direction:column;gap:12px;animation:mdFade 200ms ease">
+        <div style="font:600 20px/28px var(--font)">{{ modalTitle }}</div>
+        <sc-if value="{{ isConnect }}" hint-placeholder-val="{{ false }}"><div style="font:400 14px/20px var(--font);color:#475569">This is a mock. In a real workspace you would authorise {{ connectName }} here. The channel stays "Available" in this demo.</div></sc-if>
+        <sc-if value="{{ isHook }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Endpoint URL<input value="{{ whUrl }}" onChange="{{ setWhUrl }}" placeholder="https://hooks.example.test/..." style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0"></label>
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">Event<select onChange="{{ setWhEvent }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 6px;font:500 13px/20px var(--font);outline:0;background:#fff"><sc-for list="{{ events }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.v }}</option></sc-for></select></label>
+          <sc-if value="{{ hasLog }}" hint-placeholder-val="{{ false }}"><div style="font:600 12px/16px var(--mono);color:#15803D">{{ lastLog }}</div></sc-if>
+        </sc-if>
+        <div style="display:flex;justify-content:flex-end;gap:8px"><sc-if value="{{ isHook }}" hint-placeholder-val="{{ false }}"><button onClick="{{ testModal }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Test</button></sc-if><button onClick="{{ closeModal }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">{{ closeLabel }}</button><sc-if value="{{ isHook }}" hint-placeholder-val="{{ false }}"><button onClick="{{ saveHook }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer">Save webhook</button></sc-if></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, modal: null, shown: false, keyN: 1, whUrl: '', whEvent: 'ticket.created' };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  renderVals() {
+    const { m, s, modal, shown, keyN, whUrl, whEvent } = this.state, nop = () => {};
+    const blank = { locked: false, tip: '', cursor: 'pointer', op: 1, channels: [], available: [], keyText: '', reveal: nop, revealLabel: 'Reveal', copyKey: nop, regen: nop, openWh: nop, hooks: [], hasLog: false, log: [], lastLog: '', modal: false, closeModal: nop, stop: nop, modalTitle: '', isConnect: false, isHook: false, connectName: '', whUrl: '', setWhUrl: nop, setWhEvent: nop, events: [], testModal: nop, closeLabel: 'Close', saveHook: nop };
+    if (!m || !s) return blank;
+    const st = m.store, locked = s.role !== 'Team Lead', ed = { locked, tip: locked ? 'Team Lead only' : '', cursor: locked ? 'not-allowed' : 'pointer', op: locked ? 0.5 : 1 };
+    const cnt = (c) => s.tickets.filter((t) => t.channel === c).length;
+    const CH = [['Email', 'Email (support inbox)', 'support@meridian-lending.example', 'mail', '#3B82F6'], ['LINE', 'LINE Official Account', 'Chats from the Meridian LINE OA', 'chat', '#22C55E'], ['Phone', 'Phone / Cloud PBX', 'Inbound calls with call logs', 'phone', '#F59E0B'], ['Form', 'Web form', 'Dealer and borrower request form', 'form', '#8B5CF6']];
+    const KEY = 'mk_live_51HxDEMOnotRealKey' + String(keyN).padStart(2, '0') + 'a3F9';
+    const log = s.webhookLog.map((l) => ({ time: m.fmtTime(l.at), event: l.event, status: l.status, ms: l.ms }));
+    return { ...blank, ...ed,
+      channels: CH.map(([k, name, desc, icon, tile]) => { const on = s.channelsOn[k]; return { name, desc, icon, tile, tone: on ? 'green' : 'slate', status: on ? 'Connected' : 'Disabled', count: cnt(k) + ' tickets', bg: on ? '#7C3AED' : '#CBD5E1', knob: on ? '18px' : '2px', toggle: () => { if (!locked) st.toggleChannel(k); }, isForm: k === 'Form', gap: k === 'Form' ? '0' : 'auto', portal: () => st.openPortal() }; }),
+      available: [['Messenger', 'Social inbox for Page messages', 'chat', '#2563EB'], ['WhatsApp', 'Business messages and templates', 'phone', '#16A34A'], ['Live chat', 'Website chat widget', 'chat', '#EA580C']].map(([name, desc, icon, tile]) => ({ name, desc, icon, tile, connect: () => { if (!locked) this.setState({ modal: { kind: 'connect', name } }); } })),
+      keyText: shown ? KEY : 'mk_live_••••••••••••••••a3F9', revealLabel: shown ? 'Hide' : 'Reveal', reveal: () => this.setState({ shown: !shown }),
+      copyKey: () => { const fb = () => { try { const ta = document.createElement('textarea'); ta.value = KEY; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); document.body.removeChild(ta); return ok; } catch (e) { return false; } }; let done = false; try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(KEY).then(() => st.toast('Key copied (demo)'), () => st.toast(fb() ? 'Key copied (demo)' : 'Copy unavailable. Select the key manually.')); done = true; } } catch (e) {} if (!done) st.toast(fb() ? 'Key copied (demo)' : 'Copy unavailable. Select the key manually.'); },
+      regen: () => { if (!locked) { this.setState({ keyN: keyN + 1, shown: false }); st.toast('New demo key generated'); } },
+      openWh: () => { if (!locked) this.setState({ modal: { kind: 'hook' }, whUrl: '', whEvent: 'ticket.created' }); },
+      hooks: s.webhooks.map((w) => ({ url: w.url, event: w.event, status: w.active ? 'Active' : 'Paused', bg: w.active ? '#7C3AED' : '#CBD5E1', knob: w.active ? '16px' : '2px', test: () => st.testWebhook(w.url, w.event), toggle: () => { if (!locked) st.toggleWebhook(w.id); } })),
+      hasLog: log.length > 0, log, lastLog: s.webhookLog[0] ? '200 OK · POST ' + s.webhookLog[0].event + ' → ' + s.webhookLog[0].url : '',
+      modal: !!modal, closeModal: () => this.setState({ modal: null }), stop: (e) => e.stopPropagation(), isConnect: !!modal && modal.kind === 'connect', isHook: !!modal && modal.kind === 'hook',
+      modalTitle: modal ? (modal.kind === 'connect' ? 'Connect ' + modal.name : 'Add webhook') : '', connectName: modal && modal.name || '', closeLabel: modal && modal.kind === 'hook' ? 'Cancel' : 'Close',
+      whUrl, setWhUrl: (e) => this.setState({ whUrl: e.target.value }), setWhEvent: (e) => this.setState({ whEvent: e.target.value }), events: ['ticket.created', 'ticket.resolved', 'sla.breached'].map((v) => ({ v, sel: whEvent === v })),
+      testModal: () => st.testWebhook(whUrl || 'https://hooks.example.test/new', whEvent),
+      saveHook: () => { if (!whUrl.trim()) return st.toast('Enter an endpoint URL'); st.addWebhook({ url: whUrl.trim(), event: whEvent }); this.setState({ modal: null }); } };
+  }
+}
+</script>
+</body>
+</html>

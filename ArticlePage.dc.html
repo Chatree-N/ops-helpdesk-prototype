@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;height:100%;overflow-y:auto;background:#F8FAFC;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+  <div style="max-width:880px;margin:0 auto;padding:24px 32px 48px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:700 12px/16px var(--mono);color:#64748B">{{ a.id }}</span><dc-import name="Pill" kind="tone" value="{{ a.stTone }}" label="{{ a.status }}" hint-size="70px,20px"></dc-import><dc-import name="Pill" kind="tone" value="{{ a.auTone }}" label="{{ a.audience }}" hint-size="64px,20px"></dc-import><dc-import name="Pill" kind="tone" value="slate" label="{{ a.cat }}" hint-size="120px,20px"></dc-import></div>
+    <div style="font:600 20px/28px var(--font);text-wrap:pretty">{{ a.title }}</div>
+    <div style="font:400 13px/20px var(--font);color:#64748B">By {{ a.author }} · Updated {{ a.updated }} · {{ a.views }} views · {{ a.helpful }} found this helpful</div>
+    <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 16px/24px var(--font);color:#334155;text-wrap:pretty">{{ a.summary }}</div>
+      <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:8px"><sc-if value="{{ b.isP }}" hint-placeholder-val="{{ true }}"><div style="font:400 15px/24px var(--font);color:#334155;text-wrap:pretty">{{ b.text }}</div></sc-if><sc-for list="{{ b.steps }}" as="x" hint-placeholder-count="0"><div style="display:flex;gap:12px;align-items:flex-start"><span style="width:24px;height:24px;border-radius:50%;background:#EDE9FE;color:#6D28D9;display:inline-flex;align-items:center;justify-content:center;font:700 12px/1 var(--font);flex:none">{{ x.n }}</span><span style="font:400 15px/24px var(--font);color:#334155;text-wrap:pretty">{{ x.text }}</span></div></sc-for></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:16px 24px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font:600 14px/20px var(--font);flex:1;min-width:140px">{{ voteText }}</span><button onClick="{{ yes }}" disabled="{{ voted }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer;opacity:{{ voteOp }}" style-hover="background:#F0FDF4">Helpful · Yes</button><button onClick="{{ no }}" disabled="{{ voted }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer;opacity:{{ voteOp }}" style-hover="background:#FEF2F2">Helpful · No</button>
+      <button onClick="{{ copy }}" style="height:36px;padding:0 16px;border:1px solid #DDD6FE;border-radius:10px;background:#F5F3FF;color:#6D28D9;font:600 14px/20px var(--font);cursor:pointer">{{ copyLabel }}</button><span title="Open a ticket to insert this article into a reply" style="display:inline-flex"><button disabled="{{ true }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:not-allowed;opacity:.5">Insert into a ticket reply</button></span></div>
+    <sc-if value="{{ hasRel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">RELATED ARTICLES</div>
+      <sc-for list="{{ rel }}" as="r" hint-placeholder-count="2"><button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:12px;text-align:left;border:0;background:#fff;border-radius:14px;padding:0 16px;height:56px;box-shadow:0 1px 2px rgba(15,18,32,.05);cursor:pointer" style-hover="background:#F8FAFC"><span style="flex:1;min-width:0"><span style="display:block;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span><span style="display:block;font:400 12px/16px var(--font);color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.summary }}</span></span><dc-import name="Icon" icon="chevron" size="16" color="#64748B" hint-size="16px,16px"></dc-import></button></sc-for></div></sc-if>
+  </div>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/20px var(--font);white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="12" stroke="2.5" hint-size="12px,12px"></dc-import></span>{{ toastText }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, voted: {} };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  renderVals() {
+    const { m, s, voted } = this.state, nop = () => {};
+    const blank = { a: { id: '', stTone: 'slate', status: '', auTone: 'slate', audience: '', cat: '', title: '', author: '', updated: '', views: 0, helpful: '', summary: '' }, blocks: [], voteText: '', yes: nop, no: nop, voted: false, voteOp: 1, copyLabel: 'Copy link', copy: nop, hasRel: false, rel: [], toast: false, toastText: '' };
+    if (!m || !s) return blank;
+    const a = s.kb.articles.find((x) => x.id === s.kbArticleId); if (!a) return blank;
+    const st = m.store, v = voted[a.id], pc = m.kbHelpfulPct(a);
+    const rel = m.kbRelated(s, a, false);
+    return { a: { id: a.id, stTone: a.status === 'Published' ? 'green' : 'amber', status: a.status, auTone: a.audience === 'Public' ? 'blue' : 'violet', audience: a.audience, cat: (s.kb.categories.find((c) => c.id === a.categoryId) || { name: '' }).name, title: a.title, author: a.author, updated: m.fmtStamp(a.updatedAt), views: a.views.toLocaleString('en-US'), helpful: pc == null ? 'No votes yet' : pc + '% (' + (a.helpfulYes + a.helpfulNo) + ' votes)', summary: a.summary },
+      blocks: a.body.map((b) => (b.t === 'ol' ? { isP: false, text: '', steps: b.x.map((text, i) => ({ n: i + 1, text })) } : { isP: true, text: b.x, steps: [] })),
+      voteText: v ? 'Thanks for your feedback.' : 'Helpful?', voted: !!v, voteOp: v ? 0.5 : 1,
+      yes: () => { if (!v) { st.kbHelpful(a.id, true); this.setState({ voted: { ...voted, [a.id]: 'y' } }); } }, no: () => { if (!v) { st.kbHelpful(a.id, false); this.setState({ voted: { ...voted, [a.id]: 'n' } }); } },
+      copyLabel: a.audience === 'Internal' ? 'Internal link, do not share with customers' : 'Copy link', copy: () => { const link = m.kbLink(a); try { navigator.clipboard && navigator.clipboard.writeText(link).catch(() => {}); } catch (e) {} st.toast(a.audience === 'Internal' ? 'Internal link copied. Do not share with customers' : 'Link copied'); },
+      hasRel: rel.length > 0, rel: rel.map((r) => ({ title: r.title, summary: r.summary, go: () => st.openArticle(r.id) })), toast: !!s.toast, toastText: s.toast ? s.toast.text : '' };
+  }
+}
+</script>
+</body>
+</html>

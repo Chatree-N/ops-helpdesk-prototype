@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<span style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font:600 12px/16px -apple-system,'SF Pro Text',Inter,sans-serif;padding:{{ pad }};border-radius:{{ radius }};background:{{ bg }};color:{{ fg }};font-variant-numeric:tabular-nums">{{ label }}</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:120,&quot;height&quot;:32},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;priority&quot;,&quot;status&quot;,&quot;team&quot;,&quot;tone&quot;],&quot;default&quot;:&quot;status&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;value&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Open&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const M = {
+      priority: { Urgent: ['#FEE2E2', '#B91C1C'], High: ['#FFEDD5', '#C2410C'], Normal: ['#DBEAFE', '#1D4ED8'], Low: ['#F1F5F9', '#475569'] },
+      status: { New: ['rgba(142,142,147,.14)', '#5B5B60'], Open: ['rgba(0,122,255,.12)', '#0062CC'], Pending: ['rgba(255,149,0,.14)', '#8A4F00'], Escalated: ['rgba(175,82,222,.12)', '#8944AB'], Resolved: ['rgba(52,199,89,.14)', '#1F7A39'] },
+      team: { Servicing: ['#EEF2FF', '#4338CA'], Collections: ['#ECFDF5', '#047857'], 'Onboarding Ops': ['#ECFEFF', '#0E7490'], Legal: ['#FFF1F2', '#BE123C'] },
+      tone: { violet: ['#EDE9FE', '#6D28D9'], red: ['#FEE2E2', '#B91C1C'], green: ['#DCFCE7', '#15803D'], amber: ['#FEF3C7', '#92400E'], slate: ['#F1F5F9', '#475569'], blue: ['#DBEAFE', '#1D4ED8'] },
+    };
+    const p = this.props, kind = p.kind ?? 'tone', v = p.value ?? p.tone ?? 'slate', c = (M[kind] || M.tone)[v] || M.tone.slate;
+    const rect = kind === 'team';
+    return { bg: c[0], fg: c[1], label: p.label ?? p.value, radius: rect ? '6px' : '999px', pad: rect ? '2px 8px' : '2px 10px' };
+  }
+}
+</script>
+</body>
+</html>

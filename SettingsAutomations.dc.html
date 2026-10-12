@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}</style></helmet>
+<div style="display:flex;flex-direction:column;gap:20px;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+  <div><div style="font:600 20px/28px var(--font);letter-spacing:-.2px">Automations &amp; SLA</div><div style="font:400 14px/20px var(--font);color:#64748B">Response targets, routing rules and canned replies.</div></div>
+  <div style="display:flex;gap:24px;border-bottom:1px solid #E2E8F0"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="border:0;background:none;padding:8px 0;margin-bottom:-1px;cursor:pointer;font:600 14px/20px var(--font);color:{{ t.fg }};border-bottom:2px solid {{ t.line }}">{{ t.label }}</button></sc-for></div>
+
+  <sc-if value="{{ isSla }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#fff;border-radius:14px;padding:8px 20px 16px;box-shadow:0 1px 2px rgba(15,18,32,.05)">
+        <div style="display:grid;grid-template-columns:minmax(120px,1fr) minmax(160px,1fr) minmax(160px,1fr);gap:16px;padding:12px 0;border-bottom:1px solid #F1F5F9;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B"><span>PRIORITY</span><span>FIRST RESPONSE</span><span>RESOLUTION</span></div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:minmax(120px,1fr) minmax(160px,1fr) minmax(160px,1fr);gap:16px;align-items:center;padding:10px 0;min-height:56px;box-sizing:border-box;border-bottom:1px solid #F8FAFC"><dc-import name="Pill" kind="priority" value="{{ r.p }}" hint-size="56px,20px"></dc-import>
+            <span title="{{ tip }}" style="display:flex;align-items:center;gap:8px"><input aria-label="{{ r.p }} first response minutes" value="{{ r.fr }}" disabled="{{ locked }}" onChange="{{ r.setFr }}" onBlur="{{ r.saveFr }}" onKeyDown="{{ r.keyFr }}" style="width:80px;height:34px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:600 14px/20px var(--font);outline:0;font-variant-numeric:tabular-nums;opacity:{{ op }}"><span style="font:400 13px/20px var(--font);color:#64748B">min · {{ r.frText }}</span></span>
+            <span title="{{ tip }}" style="display:flex;align-items:center;gap:8px"><input aria-label="{{ r.p }} resolution minutes" value="{{ r.res }}" disabled="{{ locked }}" onChange="{{ r.setRes }}" onBlur="{{ r.saveRes }}" onKeyDown="{{ r.keyRes }}" style="width:80px;height:34px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:600 14px/20px var(--font);outline:0;font-variant-numeric:tabular-nums;opacity:{{ op }}"><span style="font:400 13px/20px var(--font);color:#64748B">min · {{ r.resText }}</span></span></div>
+        </sc-for>
+        <div style="display:grid;grid-template-columns:minmax(120px,1fr) minmax(160px,1fr) minmax(160px,1fr);gap:16px;align-items:center;padding:10px 0"><dc-import name="Pill" kind="tone" value="amber" label="Vendor wait" hint-size="80px,20px"></dc-import><span style="font:400 13px/20px var(--font);color:#64748B">n/a</span>
+          <span title="{{ tip }}" style="display:flex;align-items:center;gap:8px"><input aria-label="Vendor wait minutes" value="{{ vendor }}" disabled="{{ locked }}" onChange="{{ setVendor }}" onBlur="{{ saveVendor }}" onKeyDown="{{ keyVendor }}" style="width:80px;height:34px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:600 14px/20px var(--font);outline:0;opacity:{{ op }}"><span style="font:400 13px/20px var(--font);color:#64748B">min · {{ vendorText }}</span></span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+        <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:6px"><div style="font:600 14px/20px var(--font)">Support hours</div><div style="font:500 14px/20px var(--font)">{{ hours }}</div><div style="font:400 12px/16px var(--font);color:#64748B">SLA clocks only run inside these hours.</div></div>
+        <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:600 14px/20px var(--font)">Pause clock while Pending</div><div style="font:400 12px/16px var(--font);color:#64748B">Waiting on the customer stops the SLA timer.</div></div><span title="{{ tip }}" style="display:inline-flex"><button role="switch" aria-label="Pause clock while Pending" onClick="{{ togglePause }}" disabled="{{ locked }}" style="width:40px;height:24px;border-radius:12px;border:0;background:{{ pauseBg }};position:relative;cursor:{{ cursor }};opacity:{{ op }};padding:0"><span style="position:absolute;top:2px;left:{{ pauseKnob }};width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.3);transition:left 150ms ease"></span></button></span></div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:600 14px/20px var(--font)">Recalculate open tickets</div><div style="font:400 12px/16px var(--font);color:#64748B">Edits only apply to new tickets. Use this to move the {{ openCount }} open tickets to the current targets.</div></div><span title="{{ tip }}" style="display:inline-flex"><button onClick="{{ recalc }}" disabled="{{ locked }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Recalculate open tickets</button></span></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isRules }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start">
+      <div style="background:#fff;border-radius:14px;padding:8px 20px 16px;box-shadow:0 1px 2px rgba(15,18,32,.05);min-width:0">
+        <div style="display:flex;align-items:center;padding:12px 0"><span style="font:600 14px/20px var(--font);flex:1">Rules run top to bottom. First match wins.</span><span title="{{ tip }}" style="display:inline-flex"><button onClick="{{ openRule }}" disabled="{{ locked }}" style="height:32px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Add rule</button></span></div>
+        <sc-for list="{{ ruleRows }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 0;min-height:56px;box-sizing:border-box;border-top:1px solid #F1F5F9;opacity:{{ r.dim }}"><span style="width:22px;height:22px;border-radius:50%;background:#F1F5F9;color:#64748B;display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 var(--font);flex:none">{{ r.n }}</span>
+            <div style="flex:1;min-width:0"><div style="font:600 14px/20px var(--font)">{{ r.name }}</div><div style="font:400 12px/16px var(--mono);color:#64748B;text-wrap:pretty">{{ r.text }}</div></div>
+            <span title="{{ tip }}" style="display:inline-flex;gap:2px"><button aria-label="Move up" onClick="{{ r.up }}" disabled="{{ locked }}" style="width:28px;height:28px;border:0;border-radius:8px;background:none;color:#64748B;cursor:{{ cursor }};opacity:{{ op }};font:700 14px/1 var(--font)" style-hover="background:#F1F5F9">↑</button><button aria-label="Move down" onClick="{{ r.down }}" disabled="{{ locked }}" style="width:28px;height:28px;border:0;border-radius:8px;background:none;color:#64748B;cursor:{{ cursor }};opacity:{{ op }};font:700 14px/1 var(--font)" style-hover="background:#F1F5F9">↓</button></span>
+            <span title="{{ tip }}" style="display:inline-flex"><button role="switch" aria-label="Toggle rule" onClick="{{ r.toggle }}" disabled="{{ locked }}" style="width:36px;height:22px;border-radius:11px;border:0;background:{{ r.bg }};position:relative;cursor:{{ cursor }};opacity:{{ op }};padding:0"><span style="position:absolute;top:2px;left:{{ r.knob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.3);transition:left 150ms ease"></span></button></span></div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:10px;min-width:0">
+        <div style="font:600 14px/20px var(--font)">Test a ticket</div>
+        <input aria-label="Test subject" value="{{ testSubject }}" onChange="{{ setTestSubject }}" placeholder="Type a ticket subject…" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><sc-for list="{{ testSelects }}" as="f" hint-placeholder-count="2"><select aria-label="{{ f.label }}" onChange="{{ f.change }}" style="height:34px;border:1px solid #E2E8F0;border-radius:10px;padding:0 6px;font:500 13px/20px var(--font);outline:0;background:#fff"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></sc-for></div>
+        <div style="background:#F8FAFC;border-radius:10px;padding:10px 12px"><div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">RESULT</div><div style="font:600 14px/20px var(--font);color:{{ resColor }}">{{ resName }}</div><div style="font:400 12px/16px var(--mono);color:#64748B">{{ resText }}</div></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isMacros }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start">
+      <div style="background:#fff;border-radius:14px;padding:8px 20px 16px;box-shadow:0 1px 2px rgba(15,18,32,.05);min-width:0">
+        <div style="display:flex;align-items:center;padding:12px 0"><span style="font:600 14px/20px var(--font);flex:1">{{ macroCount }} macros</span><span title="{{ tip }}" style="display:inline-flex"><button onClick="{{ openMacro }}" disabled="{{ locked }}" style="height:32px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:{{ cursor }};opacity:{{ op }}">Add macro</button></span></div>
+        <sc-for list="{{ macroRows }}" as="x" hint-placeholder-count="6"><button onClick="{{ x.pick }}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-top:1px solid #F1F5F9;min-height:56px;box-sizing:border-box;background:{{ x.bg }};padding:10px 8px;cursor:pointer;border-radius:0" style-hover="background:#F8FAFC"><span style="flex:1;min-width:0"><span style="display:block;font:600 14px/20px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ x.title }}</span><span style="display:block;font:400 12px/16px var(--font);color:#64748B">{{ x.category }}</span></span><span style="font:600 12px/16px var(--font);color:#64748B;font-variant-numeric:tabular-nums">{{ x.uses }} uses</span></button></sc-for>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:10px;min-width:0">
+        <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">PREVIEW</div><div style="font:600 16px/24px var(--font)">{{ pv.title }}</div><dc-import name="Pill" kind="tone" value="violet" label="{{ pv.category }}" hint-size="80px,20px"></dc-import>
+        <div style="font:400 14px/20px var(--font);color:#334155;background:#F8FAFC;border-radius:10px;padding:12px;text-wrap:pretty">{{ pv.body }}</div>
+        <div style="font:400 12px/16px var(--font);color:#64748B">Placeholders fill from the open ticket. Preview uses sample values.</div>
+        <div><button onClick="{{ insert }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer" style-hover="background:#6D28D9">Insert in reply</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;background:rgba(15,23,42,.35);z-index:80;display:flex;align-items:center;justify-content:center">
+      <div onClick="{{ stop }}" style="width:480px;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,.3);padding:24px;display:flex;flex-direction:column;gap:12px;animation:mdFade 200ms ease">
+        <div style="font:600 20px/28px var(--font)">{{ modalTitle }}</div>
+        <sc-for list="{{ mFields }}" as="f" hint-placeholder-count="3"><label style="display:flex;flex-direction:column;gap:4px;font:600 12px/16px var(--font);color:#64748B">{{ f.label }}<sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}"><input aria-label="{{ f.label }}" value="{{ f.value }}" onChange="{{ f.change }}" placeholder="{{ f.ph }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0"></sc-if><sc-if value="{{ f.isArea }}" hint-placeholder-val="{{ false }}"><textarea aria-label="{{ f.label }}" value="{{ f.value }}" onChange="{{ f.change }}" placeholder="{{ f.ph }}" style="height:96px;resize:none;border:1px solid #E2E8F0;border-radius:12px;padding:10px;font:400 14px/20px var(--font);outline:0"></textarea></sc-if><sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}"><select aria-label="{{ f.label }}" onChange="{{ f.change }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 6px;font:500 13px/20px var(--font);outline:0;background:#fff"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></sc-if></label></sc-for>
+        <div style="display:flex;justify-content:flex-end;gap:8px"><button onClick="{{ closeModal }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Cancel</button><button onClick="{{ saveModal }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer">Save</button></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, tab: 'sla', draft: {}, testSubject: '', testCh: 'Any', testPr: 'Any', pick: null, modal: null, mf: {} };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); }
+  componentWillUnmount() { this.unsub && this.unsub(); }
+  renderVals() {
+    const { m, s, tab, draft, testSubject, testCh, testPr, pick, modal, mf } = this.state, nop = () => {};
+    const blank = { tabs: [], isSla: true, isRules: false, isMacros: false, locked: false, tip: '', cursor: 'pointer', op: 1, rows: [], vendor: '', vendorText: '', setVendor: nop, saveVendor: nop, keyVendor: nop, hours: '', togglePause: nop, pauseBg: '#CBD5E1', pauseKnob: '2px', openCount: 0, recalc: nop, openRule: nop, ruleRows: [], testSubject: '', setTestSubject: nop, testSelects: [], resName: '', resText: '', resColor: '#475569', macroCount: 0, openMacro: nop, macroRows: [], pv: { title: '', category: '', body: '' }, insert: nop, modal: false, closeModal: nop, stop: nop, modalTitle: '', mFields: [], saveModal: nop };
+    if (!m || !s) return blank;
+    const st = m.store, locked = s.role !== 'Team Lead', ed = { locked, tip: locked ? 'Team Lead only' : '', cursor: locked ? 'not-allowed' : 'pointer', op: locked ? 0.5 : 1 };
+    const T = m.SLA_TARGETS, num = (k, cur) => (draft[k] != null ? draft[k] : String(cur));
+    const commit = (k, prio, field) => { const v = parseInt(draft[k], 10); const nd = { ...draft }; delete nd[k]; this.setState({ draft: nd }); if (!locked && v > 0) { const cur = prio === 'vendor' ? T.vendor : T[prio][field]; if (v !== cur) st.setSla(prio, field, v); } };
+    const field = (k, cur, prio, f) => ({ val: num(k, cur), set: (e) => this.setState({ draft: { ...draft, [k]: e.target.value } }), save: () => commit(k, prio, f), key: (e) => { if (e.key === 'Enter') e.target.blur(); } });
+    const rows = m.PRIORITIES.map((p) => { const a = field(p + 'fr', T[p].fr, p, 'fr'), b = field(p + 'res', T[p].res, p, 'res');
+      return { p, fr: a.val, setFr: a.set, saveFr: a.save, keyFr: a.key, frText: m.fmtDur(T[p].fr), res: b.val, setRes: b.set, saveRes: b.save, keyRes: b.key, resText: m.fmtDur(T[p].res) }; });
+    const v = field('vendor', T.vendor, 'vendor', 'res');
+    const tabs = [['sla', 'SLA policies'], ['rules', 'Routing rules'], ['macros', 'Macros']].map(([k, label]) => ({ label, fg: tab === k ? '#7C3AED' : '#64748B', line: tab === k ? '#7C3AED' : 'transparent', go: () => this.setState({ tab: k }) }));
+    const rules = s.rules, TEAMS = m.TEAMS;
+    const test = m.matchRule({ subject: testSubject, channel: testCh === 'Any' ? '' : testCh, priority: testPr === 'Any' ? '' : testPr });
+    const sel = (label, val, opts, key) => ({ label, opts: opts.map((x) => ({ v: x, l: x, sel: val === x })), change: (e) => this.setState({ [key]: e.target.value }) });
+    const mc = s.macros, cur = mc.find((x) => x.id === pick) || mc[0];
+    const sample = (t) => t.replace(/\{\{Customer Name\}\}/g, 'Anucha').replace(/\{\{Reference Number\}\}/g, 'LN-310977');
+    const setM = (k) => (e) => this.setState({ mf: { ...mf, [k]: e.target.value } });
+    const mkSel = (label, k, opts, val) => ({ label, isInput: false, isArea: false, isSelect: true, opts: opts.map((x) => ({ v: x, l: x, sel: val === x })), change: setM(k) });
+    const mkIn = (label, k, ph, area) => ({ label, isInput: !area, isArea: !!area, isSelect: false, value: mf[k] || '', ph, change: setM(k), opts: [] });
+    let mFields = [], modalTitle = '', saveModal = nop;
+    if (modal === 'rule') { const fl = mf.field || 'keyword'; modalTitle = 'Add routing rule';
+      mFields = [mkIn('Rule name', 'name', 'e.g. VIP borrowers → Team Lead'), mkSel('IF', 'field', ['keyword', 'channel', 'priority', 'product'], fl),
+        fl === 'channel' ? mkSel('Value', 'value', m.CHANNELS, mf.value || m.CHANNELS[0]) : fl === 'priority' ? mkSel('Value', 'value', m.PRIORITIES, mf.value || m.PRIORITIES[0]) : fl === 'product' ? mkSel('Value', 'value', m.PRODUCTS, mf.value || m.PRODUCTS[0]) : mkIn('Value (comma separated keywords)', 'value', 'e.g. vip, urgent callback'),
+        mkSel('THEN assign to team', 'team', ['No change', ...TEAMS], mf.team || 'No change'), mkSel('Set priority', 'prio', ['No change', ...m.PRIORITIES], mf.prio || 'No change'), mkIn('Add tag', 'tag', 'optional')];
+      saveModal = () => { const value = fl === 'keyword' ? (mf.value || '').trim() : mf.value || (fl === 'channel' ? m.CHANNELS[0] : fl === 'priority' ? m.PRIORITIES[0] : m.PRODUCTS[0]); if (!(mf.name || '').trim() || !value) return st.toast('Add a name and a value'); st.addRule({ name: mf.name.trim(), cond: { field: fl, value }, action: { ...(mf.team && mf.team !== 'No change' ? { team: mf.team } : {}), ...(mf.prio && mf.prio !== 'No change' ? { priority: mf.prio } : {}), ...(mf.tag ? { tag: mf.tag.trim() } : {}) } }); this.setState({ modal: null, mf: {} }); }; }
+    if (modal === 'macro') { modalTitle = 'Add macro'; mFields = [mkIn('Title', 'title', 'e.g. Request payslip'), mkSel('Category', 'category', ['Payments', 'Documents', 'Settlement', 'Service', 'Repayment', 'Closure', 'Other'], mf.category || 'Payments'), mkIn('Body (use {{Customer Name}} and {{Reference Number}})', 'body', 'Hello {{Customer Name}}, …', true)];
+      saveModal = () => { if (!(mf.title || '').trim() || !(mf.body || '').trim()) return st.toast('Add a title and a body'); st.addMacro({ title: mf.title.trim(), category: mf.category || 'Payments', body: mf.body.trim() }); this.setState({ modal: null, mf: {} }); }; }
+    return { ...blank, ...ed, tabs, isSla: tab === 'sla', isRules: tab === 'rules', isMacros: tab === 'macros', rows, vendor: v.val, vendorText: m.fmtDur(T.vendor), setVendor: v.set, saveVendor: v.save, keyVendor: v.key,
+      hours: m.HOURS.open + ':00–' + m.HOURS.close + ':00, 7 days a week', togglePause: () => { if (!locked) st.setPausePending(!m.SLA_CFG.pausePending); }, pauseBg: m.SLA_CFG.pausePending ? '#7C3AED' : '#CBD5E1', pauseKnob: m.SLA_CFG.pausePending ? '18px' : '2px',
+      openCount: s.tickets.filter((t) => t.status !== 'Resolved').length, recalc: () => { if (!locked) st.recalcSla(); },
+      openRule: () => { if (!locked) this.setState({ modal: 'rule', mf: {} }); },
+      ruleRows: rules.map((r, i) => ({ n: i + 1, name: r.name, text: m.ruleText(r), dim: r.enabled ? 1 : 0.5, bg: r.enabled ? '#7C3AED' : '#CBD5E1', knob: r.enabled ? '16px' : '2px', toggle: () => { if (!locked) st.toggleRule(r.id); }, up: () => { if (!locked) st.moveRule(r.id, -1); }, down: () => { if (!locked) st.moveRule(r.id, 1); } })),
+      testSubject, setTestSubject: (e) => this.setState({ testSubject: e.target.value }), testSelects: [sel('Channel', testCh, ['Any', ...m.CHANNELS], 'testCh'), sel('Priority', testPr, ['Any', ...m.PRIORITIES], 'testPr')],
+      resName: test ? test.name : 'No rule matches', resText: test ? m.ruleText(test) : 'Enable a rule or add a default.', resColor: test ? '#6D28D9' : '#B45309',
+      macroCount: mc.length, openMacro: () => { if (!locked) this.setState({ modal: 'macro', mf: {} }); }, macroRows: mc.map((x) => ({ title: x.title, category: x.category, uses: x.uses, bg: cur && cur.id === x.id ? '#F5F3FF' : 'transparent', pick: () => this.setState({ pick: x.id }) })),
+      pv: cur ? { title: cur.title, category: cur.category, body: sample(cur.body) } : blank.pv, insert: () => cur && st.insertInReply(cur.id),
+      modal: !!modal, closeModal: () => this.setState({ modal: null }), stop: (e) => e.stopPropagation(), modalTitle, mFields, saveModal };
+  }
+}
+</script>
+</body>
+</html>

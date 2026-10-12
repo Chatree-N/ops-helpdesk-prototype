@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<span style="display:inline-flex;align-items:center;justify-content:center;flex:none;width:{{ px }};height:{{ px }};border-radius:50%;background:{{ bg }};color:{{ fg }};font:700 {{ fs }}/1 -apple-system,'SF Pro Text',Inter,sans-serif;letter-spacing:.2px">{{ initials }}</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:40,&quot;height&quot;:40},&quot;initials&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;ML&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;color&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#8B5CF6&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:24,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props, s = p.size ?? 24;
+    let bg = p.color ?? '#64748B', fg = '#fff';
+    const rgb = (h) => { h = String(h).replace('#', ''); if (h.length === 3) h = h.split('').map((c) => c + c).join(''); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); };
+    const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+    if (/^#[0-9a-f]{3,6}$/i.test(bg)) { let c = rgb(bg); if (lum(c) > 0.4) { fg = '#1E293B'; } else { let n = 0; while (1.05 / (lum(c) + 0.05) < 4.5 && n++ < 20) c = c.map((v, i) => Math.round(v * 0.94)); bg = '#' + c.map((v) => v.toString(16).padStart(2, '0')).join(''); } }
+    return { px: s + 'px', fs: Math.round(s * 0.4) + 'px', bg, fg, initials: p.initials ?? '' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}@keyframes mdFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes mdUp{from{transform:translate(-50%,12px);opacity:0}to{transform:translate(-50%,0);opacity:1}}</style></helmet>
+<div style="position:relative;display:flex;height:100%;min-height:0;background:#F8FAFC;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;min-height:0">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 32px 24px;display:flex;flex-direction:column;gap:16px">
+      <button onClick="{{ goBack }}" style="align-self:flex-start;border:0;background:none;padding:4px 0;color:#7C3AED;font:600 13px/20px var(--font);cursor:pointer;display:flex;align-items:center;gap:4px" style-hover="color:#6D28D9"><dc-import name="Icon" icon="back" size="16" stroke="1.75" hint-size="16px,16px"></dc-import>Back to Inbox</button>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#64748B">#{{ t.id }}</span><dc-import name="Pill" kind="priority" value="{{ t.priority }}" hint-size="56px,20px"></dc-import><dc-import name="Pill" kind="status" value="{{ t.status }}" hint-size="64px,20px"></dc-import></div>
+        <div style="font:600 20px/28px var(--font);text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ t.subject }}</div>
+      </div>
+      <div style="background:#F1F5F9;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <dc-import name="SlaRing" size="44" pct="{{ sla.pct }}" state="{{ sla.state }}" centre="{{ sla.centre }}" hint-size="44px,44px"></dc-import>
+        <div style="flex:1;min-width:160px"><div style="font:700 14px/20px var(--font)">{{ sla.clock }}: {{ sla.label }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ sla.due }}</div></div>
+        <sc-if value="{{ collisionChip }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:6px;font:600 12px/16px var(--font);background:#EDE9FE;color:#6D28D9;border-radius:999px;padding:4px 10px"><span style="width:8px;height:8px;border-radius:50%;background:#7C3AED;animation:mdPulse 1.4s ease-in-out infinite"></span>{{ collisionChip }}</span></sc-if>
+        <span style="display:inline-flex;align-items:center;gap:6px;font:500 13px/20px var(--font);color:#334155"><dc-import name="Icon" icon="{{ t.chIcon }}" size="16" hint-size="16px,16px"></dc-import>{{ t.channel }}</span>
+      </div>
+      <sc-if value="{{ banner }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:12px;animation:mdFade 200ms ease;flex-wrap:wrap">
+          <span style="color:#B45309;display:inline-flex"><dc-import name="Icon" icon="alert" size="18" hint-size="18px,18px"></dc-import></span>
+          <span style="font:600 13px/20px var(--font);color:#92400E;flex:1">{{ banner }}</span>
+          <button onClick="{{ takeOver }}" style="height:32px;padding:0 12px;border:0;border-radius:8px;background:#FF9500;color:#fff;font:600 12px/16px var(--font);cursor:pointer">Take over</button>
+          <button onClick="{{ keepGoing }}" style="height:32px;padding:0 12px;border:1px solid #FDE68A;border-radius:8px;background:#fff;color:#92400E;font:600 12px/16px var(--font);cursor:pointer">Continue anyway</button>
+        </div>
+      </sc-if>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onClick="{{ doResolve }}" disabled="{{ resolveOff }}" title="{{ resolveTip }}" style="height:36px;padding:0 14px;border:0;border-radius:10px;background:#34C759;color:#fff;font:600 14px/20px var(--font);display:inline-flex;align-items:center;gap:6px;cursor:{{ resolveCursor }};opacity:{{ resolveOpacity }}"><dc-import name="Icon" icon="check" size="16" stroke="1.75" hint-size="16px,16px"></dc-import>Resolve</button>
+        <button onClick="{{ openEsc }}" style="height:36px;padding:0 14px;border:0;border-radius:10px;background:#FF9500;color:#fff;font:600 14px/20px var(--font);display:inline-flex;align-items:center;gap:6px;cursor:pointer" style-hover="filter:brightness(.94)"><dc-import name="Icon" icon="alert" size="16" stroke="1.75" hint-size="16px,16px"></dc-import>Escalate</button>
+        <button onClick="{{ doAlert }}" style="height:36px;padding:0 14px;border:0;border-radius:10px;background:#FF3B30;color:#fff;font:600 14px/20px var(--font);display:inline-flex;align-items:center;gap:6px;cursor:pointer" style-hover="filter:brightness(.94)"><dc-import name="Icon" icon="bell" size="16" stroke="1.75" hint-size="16px,16px"></dc-import>Alert Team Lead</button>
+      </div>
+      <div style="display:flex;gap:24px;border-bottom:1px solid #E2E8F0">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="2"><button onClick="{{ tb.go }}" style="border:0;background:none;padding:8px 0;margin-bottom:-1px;cursor:pointer;font:600 14px/20px var(--font);color:{{ tb.fg }};border-bottom:2px solid {{ tb.line }}">{{ tb.label }}</button></sc-for>
+      </div>
+      <sc-if value="{{ isConv }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ events }}" as="e" hint-placeholder-count="5">
+            <div style="display:flex;gap:12px;padding:16px 0;border-bottom:1px solid #F1F5F9">
+              <span style="width:32px;height:32px;border-radius:50%;background:{{ e.badge }};color:{{ e.fg }};display:inline-flex;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{ e.icon }}" size="16" hint-size="16px,16px"></dc-import></span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="background:{{ e.badge }};color:{{ e.fg }};border-radius:999px;padding:0 10px;font:600 12px/20px var(--font)">{{ e.label }}</span><span style="font:400 12px/16px var(--font);color:#64748B">{{ e.time }}</span></div>
+                <div style="font:400 14px/20px var(--font);color:#334155;text-wrap:pretty;{{ e.bubble }}">
+                  <sc-if value="{{ e.isNote }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;font:600 12px/16px var(--font);color:#B45309;margin-bottom:4px"><dc-import name="Icon" icon="lock" size="12" hint-size="12px,12px"></dc-import>Not visible to customer</div></sc-if>
+                  <sc-if value="{{ e.isCall }}" hint-placeholder-val="{{ false }}"><div style="font:600 12px/16px var(--font);color:#475569;margin-bottom:4px">{{ e.callMeta }}</div></sc-if>
+                  <sc-for list="{{ e.parts }}" as="pt" hint-placeholder-count="1"><span style="{{ pt.style }}">{{ pt.t }}</span></sc-for>
+                  <sc-if value="{{ e.aiLive }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;margin-top:8px"><button onClick="{{ e.accept }}" style="height:32px;padding:0 12px;border:0;border-radius:8px;background:#007AFF;color:#fff;font:600 12px/16px var(--font);cursor:pointer">Accept</button><button onClick="{{ e.accept }}" style="height:32px;padding:0 12px;border:1px solid #BFDBFE;border-radius:8px;background:#fff;color:#1D4ED8;font:600 12px/16px var(--font);cursor:pointer">Edit</button><button onClick="{{ e.dismiss }}" style="height:32px;padding:0 12px;border:0;border-radius:8px;background:none;color:#64748B;font:600 12px/16px var(--font);cursor:pointer">Dismiss</button></div></sc-if>
+                  <sc-if value="{{ e.aiNote }}" hint-placeholder-val="{{ false }}"><div style="margin-top:6px;font:600 12px/16px var(--font);color:#64748B">{{ e.aiNote }}</div></sc-if>
+                </div>
+                <sc-if value="{{ e.isCall }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:10px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:8px 12px">
+                    <button onClick="{{ e.toggle }}" aria-label="Play recording" style="width:28px;height:28px;border:0;border-radius:50%;background:#7C3AED;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="{{ e.playIcon }}" size="14" hint-size="14px,14px"></dc-import></button>
+                    <div style="flex:1;height:4px;border-radius:2px;background:#E2E8F0"><div style="width:{{ e.pct }};height:100%;border-radius:2px;background:#7C3AED"></div></div>
+                    <span style="font:500 12px/16px var(--font);color:#64748B;font-variant-numeric:tabular-nums">Recording · {{ e.duration }}</span>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isTime }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <div><div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">TIME TRACKING</div><div style="font:700 32px/40px var(--font);font-variant-numeric:tabular-nums">{{ clock }}</div></div>
+              <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+                <button onClick="{{ timerStart }}" style="height:32px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer;opacity:{{ startOp }}">Start</button>
+                <button onClick="{{ timerPause }}" style="height:32px;padding:0 14px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 13px/20px var(--font);cursor:pointer">Pause</button>
+                <button onClick="{{ timerStop }}" style="height:32px;padding:0 14px;border:1px solid #FECACA;border-radius:10px;background:#FEF2F2;color:#B91C1C;font:600 13px/20px var(--font);cursor:pointer">Stop &amp; log</button>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#475569;cursor:pointer"><input type="checkbox" checked="{{ autoStart }}" onChange="{{ toggleAuto }}" style="width:16px;height:16px;accent-color:#7C3AED;margin:0">Auto-start timer when a ticket opens</label>
+            <div style="height:1px;background:#F1F5F9"></div>
+            <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">MANUAL ENTRY</div>
+            <div style="display:grid;grid-template-columns:90px minmax(0,1fr) 150px auto;gap:8px;align-items:center">
+              <input type="number" min="1" placeholder="Minutes" value="{{ mMin }}" onChange="{{ setMMin }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0;box-sizing:border-box;width:100%">
+              <input placeholder="What did you work on?" value="{{ mNote }}" onChange="{{ setMNote }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0;box-sizing:border-box;width:100%">
+              <input type="date" value="{{ mDate }}" onChange="{{ setMDate }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 14px/20px var(--font);outline:0;box-sizing:border-box;width:100%">
+              <button onClick="{{ addManual }}" style="height:36px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer">Add entry</button>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ entries }}" as="en" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #F1F5F9"><dc-import name="Avatar" initials="{{ en.ini }}" color="{{ en.color }}" size="24" hint-size="24px,24px"></dc-import><span style="font:500 13px/20px var(--font);flex:1;min-width:0">{{ en.note }}<span style="color:#64748B"> · {{ en.name }} · {{ en.date }}</span></span><span style="font:700 13px/20px var(--font);font-variant-numeric:tabular-nums">{{ en.minutes }} min</span></div></sc-for>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid #E2E8F0;padding-top:10px;font:700 13px/20px var(--font)"><span>Total on this ticket</span><span style="font-variant-numeric:tabular-nums">{{ totalTime }}</span></div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:20px">
+            <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B;margin-bottom:8px">ACTIVITY LOG</div>
+            <sc-for list="{{ activity }}" as="a" hint-placeholder-count="4"><div style="display:flex;gap:12px;padding:8px 0;align-items:baseline"><span style="width:8px;height:8px;border-radius:50%;background:#C4B5FD;flex:none"></span><span style="font:500 13px/20px var(--font);flex:1">{{ a.text }}<span style="color:#64748B"> · {{ a.by }}</span></span><span style="font:400 12px/16px var(--font);color:#64748B;white-space:nowrap">{{ a.time }}</span></div></sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    <sc-if value="{{ isConv }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:none;border-top:1px solid #E2E8F0;background:#fff;padding:12px 32px 16px;display:flex;flex-direction:column;gap:8px;position:relative">
+        <sc-if value="{{ aiCard }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;display:flex;align-items:flex-start;gap:10px">
+            <span style="color:#1D4ED8;display:inline-flex;margin-top:2px"><dc-import name="Icon" icon="sparkle" size="16" hint-size="16px,16px"></dc-import></span>
+            <div style="flex:1;min-width:0"><div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#1D4ED8">AI SUGGESTED REPLY</div><div style="font:400 13px/20px var(--font);color:#334155;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ aiText }}</div></div>
+            <button onClick="{{ useAi }}" style="height:32px;padding:0 12px;border:0;border-radius:8px;background:#007AFF;color:#fff;font:600 12px/16px var(--font);cursor:pointer">Accept</button>
+            <button onClick="{{ dropAi }}" style="height:32px;padding:0 8px;border:0;border-radius:8px;background:none;color:#64748B;font:600 12px/16px var(--font);cursor:pointer">Dismiss</button>
+          </div>
+        </sc-if>
+        <div style="display:flex;align-items:center;gap:16px">
+          <sc-for list="{{ modes }}" as="md" hint-placeholder-count="2"><button onClick="{{ md.go }}" style="border:0;background:none;padding:0 0 4px;cursor:pointer;font:600 13px/20px var(--font);color:{{ md.fg }};border-bottom:2px solid {{ md.line }}">{{ md.label }}</button></sc-for>
+          <div style="margin-left:auto;display:flex;gap:8px;position:relative">
+            <button onClick="{{ toggleMacro }}" style="height:32px;padding:0 10px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;color:#475569;font:600 12px/16px var(--font);cursor:pointer;display:flex;align-items:center;gap:4px"><dc-import name="Icon" icon="zap" size="14" hint-size="14px,14px"></dc-import>Macros</button>
+            <button onClick="{{ toggleArt }}" style="height:32px;padding:0 10px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;color:#475569;font:600 12px/16px var(--font);cursor:pointer;display:flex;align-items:center;gap:4px"><dc-import name="Icon" icon="book" size="14" hint-size="14px,14px"></dc-import>Insert article</button>
+          </div>
+        </div>
+        <sc-if value="{{ macroOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;right:32px;bottom:calc(100% - 44px);width:340px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:8px;z-index:20;animation:mdFade 150ms ease">
+            <input placeholder="Search macros…" value="{{ macroQ }}" onChange="{{ setMacroQ }}" style="width:100%;box-sizing:border-box;height:32px;border:1px solid #E2E8F0;border-radius:8px;padding:0 10px;font:400 13px/20px var(--font);outline:0;margin-bottom:4px">
+            <sc-for list="{{ macros }}" as="mc" hint-placeholder-count="6"><button onClick="{{ mc.pick }}" style="display:block;width:100%;text-align:left;border:0;background:none;border-radius:8px;padding:8px 10px;cursor:pointer;font:500 13px/20px var(--font);color:#0F172A" style-hover="background:#F5F3FF">{{ mc.name }}</button></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ artOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;right:32px;bottom:calc(100% - 44px);width:340px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:8px;z-index:20;animation:mdFade 150ms ease">
+            <sc-for list="{{ articles }}" as="ar" hint-placeholder-count="3"><button onClick="{{ ar.pick }}" style="display:block;width:100%;text-align:left;border:0;background:none;border-radius:8px;padding:8px 10px;cursor:pointer;font:500 13px/20px var(--font);color:#0F172A" style-hover="background:#F5F3FF">{{ ar.name }}</button></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ mentionOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:32px;bottom:calc(100% - 118px);width:220px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:6px;z-index:20">
+            <sc-for list="{{ mentions }}" as="mn" hint-placeholder-count="3"><button onClick="{{ mn.pick }}" style="display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;border-radius:8px;padding:6px 8px;cursor:pointer;font:500 13px/20px var(--font)" style-hover="background:#F5F3FF"><dc-import name="Avatar" initials="{{ mn.ini }}" color="{{ mn.color }}" size="22" hint-size="22px,22px"></dc-import>{{ mn.name }}</button></sc-for>
+          </div>
+        </sc-if>
+        <textarea value="{{ text }}" onChange="{{ setText }}" placeholder="{{ ph }}" style="height:76px;resize:none;border:1px solid {{ taBorder }};border-radius:12px;padding:10px 12px;font:400 14px/20px var(--font);outline:0;background:{{ taBg }};box-sizing:border-box;width:100%"></textarea>
+        <div style="display:flex;align-items:center;gap:8px;min-height:32px">
+          <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="0"><span style="background:#EDE9FE;color:#6D28D9;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--font)">{{ ch }}</span></sc-for>
+          <div style="margin-left:auto;display:flex;position:relative">
+            <button onClick="{{ send }}" style="height:32px;padding:0 16px;border:0;border-radius:{{ sendRadius }};background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer;opacity:{{ sendOp }}" style-hover="background:#6D28D9">{{ sendLabel }}</button>
+            <sc-if value="{{ isReply }}" hint-placeholder-val="{{ true }}"><button onClick="{{ toggleSendMenu }}" aria-label="More send options" style="height:32px;width:32px;border:0;border-left:1px solid rgba(255,255,255,.35);border-radius:0 10px 10px 0;background:#7C3AED;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#6D28D9"><dc-import name="Icon" icon="chevdown" size="14" stroke="1.75" hint-size="14px,14px"></dc-import></button></sc-if>
+            <sc-if value="{{ sendMenu }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;right:0;bottom:40px;width:200px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:6px;z-index:20;animation:mdFade 150ms ease"><sc-for list="{{ sendOpts }}" as="so" hint-placeholder-count="3"><button onClick="{{ so.go }}" style="display:block;width:100%;text-align:left;border:0;background:none;border-radius:8px;padding:8px 10px;cursor:pointer;font:500 13px/20px var(--font)" style-hover="background:#F5F3FF">{{ so.label }}</button></sc-for></div></sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  <aside style="width:320px;flex:none;border-left:1px solid #E2E8F0;background:#F8FAFC;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">REQUESTER</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font:700 15px/20px var(--font)">{{ t.requester }}</span><dc-import name="Pill" kind="tone" value="{{ t.custTone }}" label="{{ t.customerType }}" hint-size="64px,20px"></dc-import></div>
+      <div style="font:400 13px/20px var(--font);color:#64748B">{{ t.requesterRole }}</div>
+      <div style="font:400 13px/20px var(--font);color:#334155">{{ t.phone }}</div>
+      <div style="font:400 13px/20px var(--font);color:#334155;overflow:hidden;text-overflow:ellipsis">{{ t.email }}</div>
+      <div style="font:700 12px/16px var(--mono);color:#64748B">Loan {{ t.loanRef }}</div>
+    </div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">TICKET</div>
+      <div style="display:flex;justify-content:space-between;font:500 13px/20px var(--font);color:#475569"><span>Channel</span><span style="display:inline-flex;align-items:center;gap:6px;color:#0F172A"><dc-import name="Icon" icon="{{ t.chIcon }}" size="14" hint-size="14px,14px"></dc-import>{{ t.channel }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font:500 13px/20px var(--font);color:#475569"><span>Team</span><dc-import name="Pill" kind="team" value="{{ t.team }}" hint-size="80px,20px"></dc-import></div>
+      <sc-for list="{{ selects }}" as="f" hint-placeholder-count="3">
+        <label style="display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#475569">{{ f.label }}
+          <span style="position:relative;display:block;width:150px;height:32px"><span style="height:32px;box-sizing:border-box;border:1px solid #E2E8F0;border-radius:8px;background:#fff;padding:0 8px;font:500 13px/20px var(--font);color:#0F172A;display:flex;align-items:center;justify-content:space-between"><span>{{ f.cur }}</span><dc-import name="Icon" icon="chevdown" size="14" color="#64748B" hint-size="14px,14px"></dc-import></span><select onChange="{{ f.change }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></span></label>
+      </sc-for>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+        <sc-for list="{{ tags }}" as="tg" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:4px;background:#F1F5F9;color:#475569;border-radius:999px;padding:2px 4px 2px 10px;font:500 12px/16px var(--font)">{{ tg.label }}<button onClick="{{ tg.remove }}" aria-label="Remove tag" style="width:16px;height:16px;border:0;border-radius:50%;background:none;color:#64748B;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="x" size="10" stroke="2.5" hint-size="10px,10px"></dc-import></button></span></sc-for>
+        <input placeholder="+ tag" value="{{ tagInput }}" onChange="{{ setTagInput }}" onKeyDown="{{ tagKey }}" style="width:70px;height:32px;margin:-4px 0;border:1px dashed #CBD5E1;border-radius:999px;padding:0 8px;font:500 12px/16px var(--font);outline:0;background:none">
+      </div>
+      <div style="display:flex;justify-content:space-between;font:400 12px/16px var(--font);color:#64748B"><span>Created {{ t.created }}</span><span>Updated {{ t.updated }}</span></div>
+    </div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+      <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">SLA</div>
+      <sc-for list="{{ bars }}" as="b" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;justify-content:space-between;font:600 13px/20px var(--font)"><span>{{ b.name }}</span><span style="color:{{ b.color }};font-variant-numeric:tabular-nums">{{ b.left }}</span></div><div style="height:8px;border-radius:4px;background:#F1F5F9"><div style="width:{{ b.w }};height:100%;border-radius:4px;background:{{ b.color }};transition:width 200ms ease"></div></div><div style="font:400 12px/16px var(--font);color:#64748B">Target {{ b.target }}</div></div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ hasVerify }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">VERIFICATION</span><dc-import name="Pill" kind="tone" value="{{ vTone }}" label="{{ vLevel }}" hint-size="64px,20px"></dc-import></div>
+        <sc-for list="{{ checks }}" as="c" hint-placeholder-count="4"><label style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#334155;cursor:pointer"><input type="checkbox" checked="{{ c.on }}" onChange="{{ c.toggle }}" style="width:16px;height:16px;accent-color:#7C3AED;margin:0">{{ c.label }}</label></sc-for>
+        <sc-if value="{{ vWarn }}" hint-placeholder-val="{{ false }}"><div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:8px 10px;font:600 12px/16px var(--font);color:#B91C1C">Verification required before action</div></sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasCsat }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B">CSAT</div>
+        <div style="display:flex;gap:2px"><sc-for list="{{ stars }}" as="sr" hint-placeholder-count="5"><span style="display:inline-flex"><dc-import name="Icon" icon="star" size="20" color="{{ sr.color }}" hint-size="20px,20px"></dc-import></span></sc-for></div>
+        <div style="font:400 13px/20px var(--font);color:#334155">{{ csatText }}</div>
+        <div style="font:400 12px/16px var(--font);color:#64748B">{{ csatDate }}</div>
+      </div>
+    </sc-if>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:4px">
+      <div style="font:700 11px/16px var(--font);letter-spacing:.06em;color:#64748B;margin-bottom:4px">RELATED</div>
+      <sc-for list="{{ related }}" as="r" hint-placeholder-count="2"><button onClick="{{ r.go }}" style="text-align:left;border:0;background:none;border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;gap:4px" style-hover="background:#F5F3FF"><span style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#64748B">#{{ r.id }}</span><dc-import name="Pill" kind="status" value="{{ r.status }}" hint-size="64px,20px"></dc-import></span><span style="font:600 13px/20px var(--font);color:#0F172A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">{{ r.subject }}</span></button></sc-for>
+    </div>
+  </aside>
+  <sc-if value="{{ escOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeEsc }}" style="position:absolute;inset:0;background:rgba(15,23,42,.35);z-index:50;display:flex;align-items:center;justify-content:center">
+      <div onClick="{{ stop }}" style="width:440px;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,.3);padding:24px;display:flex;flex-direction:column;gap:16px;animation:mdFade 200ms ease">
+        <div style="font:600 20px/28px var(--font)">Escalate {{ t.id }}</div>
+        <label style="display:flex;flex-direction:column;gap:6px;font:600 12px/16px var(--font);color:#64748B">Escalate to
+          <select value="{{ escTarget }}" onChange="{{ setEscTarget }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 8px;font:500 14px/20px var(--font);outline:0;background:#fff"><sc-for list="{{ targets }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font:600 12px/16px var(--font);color:#64748B">Reason
+          <textarea value="{{ escReason }}" onChange="{{ setEscReason }}" placeholder="What does the next owner need to know?" style="height:96px;resize:none;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font:400 14px/20px var(--font);outline:0;box-sizing:border-box;width:100%"></textarea></label>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button onClick="{{ closeEsc }}" style="height:36px;padding:0 16px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 14px/20px var(--font);cursor:pointer">Cancel</button>
+          <button onClick="{{ doEscalate }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#FF9500;color:#fff;font:600 14px/20px var(--font);cursor:pointer">Escalate</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/20px var(--font);animation:mdUp 200ms ease;white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="12" stroke="2.5" hint-size="12px,12px"></dc-import></span>{{ toastText }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, tab: 'conv', mode: 'reply', text: '', macroOpen: false, macroQ: '', artOpen: false, sendMenu: false, escOpen: false, escReason: '', escTarget: 'Ops Leader', collisionShow: false, collisionDone: false,
+    timer: { running: false, acc: 0, start: 0 }, autoStart: true, mMin: '', mNote: '', mDate: '2026-10-06', tagInput: '', play: { id: null, pct: 0 }, tick: 0 };
+  componentDidMount() {
+    import('./store.js').then((m) => { this.m = m; this.unsub = m.store.subscribe((s) => this.setState({ s })); const s = m.store.get(); this.setState({ m, s }); this.openFor(s.detailId, m, s); });
+    this.iv = setInterval(() => this.setState((x) => ({ tick: x.tick + 1 })), 1000);
+  }
+  componentDidUpdate() { const { s, m } = this.state; if (s && s.detailId !== this.curId) this.openFor(s.detailId, m, s); if (s && s.draftInsert && m) { const dr = s.draftInsert, tk = s.tickets.find((x) => x.id === s.detailId); m.store.clearDraftInsert(); m.store.macroUse(dr.id); this.setState({ text: tk ? dr.text.replace('{{Customer Name}}', tk.requester).replace('{{Reference Number}}', tk.loanRef) : dr.text, mode: 'reply', tab: 'conv' }); } }
+  componentWillUnmount() { this.flush(); clearInterval(this.iv); clearInterval(this.pv); clearTimeout(this.ct); this.unsub && this.unsub(); }
+  flush() {
+    const { timer } = this.state, m = this.m; if (!m || !this.curId) return;
+    const total = timer.acc + (timer.running ? Date.now() - timer.start : 0);
+    if (total >= 30000) m.store.addTimeEntry({ ticketId: this.curId, minutes: Math.max(1, Math.round(total / 60000)), note: 'Auto-logged timer' });
+  }
+  openFor(id, m, s) {
+    if (this.curId) this.flush();
+    this.curId = id; clearTimeout(this.ct);
+    const t = s.tickets.find((x) => x.id === id);
+    this.setState({ tab: 'conv', mode: 'reply', text: '', macroOpen: false, artOpen: false, sendMenu: false, escOpen: false, collisionShow: false, collisionDone: false,
+      timer: s.autoTimer ? { running: true, acc: 0, start: Date.now() } : { running: false, acc: 0, start: 0 } });
+    if (t && t.collision) this.ct = setTimeout(() => { if (this.curId === id && !this.state.collisionDone) this.setState({ collisionShow: true }); }, 6000);
+  }
+  renderVals() {
+    const { m, s, tab, mode, text, macroOpen, macroQ, artOpen, sendMenu, escOpen, escReason, escTarget, collisionShow, timer, mMin, mNote, mDate, tagInput, play } = this.state;
+    const autoStart = !!(s && s.autoTimer);
+    const t0 = m && s ? s.tickets.find((x) => x.id === s.detailId) : null;
+    const nop = () => {};
+    const blank = { goBack: nop, t: { id: '', priority: 'Normal', status: 'New', subject: '', chIcon: 'mail', channel: '', requester: '', custTone: 'slate', customerType: '', requesterRole: '', phone: '', email: '', loanRef: '', team: 'Servicing', created: '', updated: '' }, sla: { pct: 100, state: 'ok', centre: '', clock: '', label: '', due: '' }, collisionChip: '', banner: '', takeOver: nop, keepGoing: nop,
+      doResolve: nop, resolveOff: false, resolveTip: '', resolveCursor: 'pointer', resolveOpacity: 1, openEsc: nop, doAlert: nop, tabs: [], isConv: true, isTime: false, events: [], clock: '', startOp: 1, timerStart: nop, timerPause: nop, timerStop: nop, autoStart: true, toggleAuto: nop, mMin: '', mNote: '', mDate: '', setMMin: nop, setMNote: nop, setMDate: nop, addManual: nop, entries: [], totalTime: '', activity: [],
+      aiCard: false, aiText: '', useAi: nop, dropAi: nop, modes: [], toggleMacro: nop, toggleArt: nop, macroOpen: false, macroQ: '', setMacroQ: nop, macros: [], artOpen: false, articles: [], mentionOpen: false, mentions: [], text: '', setText: nop, ph: '', taBorder: '#E2E8F0', taBg: '#fff', chips: [], send: nop, sendRadius: '10px', sendOp: 1, sendLabel: 'Send', isReply: true, toggleSendMenu: nop, sendMenu: false, sendOpts: [],
+      selects: [], tags: [], tagInput: '', setTagInput: nop, tagKey: nop, bars: [], hasVerify: false, vTone: 'slate', vLevel: '', checks: [], vWarn: false, hasCsat: false, stars: [], csatText: '', csatDate: '', related: [], escOpen: false, closeEsc: nop, stop: nop, escTarget: '', setEscTarget: nop, targets: [], escReason: '', setEscReason: nop, doEscalate: nop, toast: false, toastText: '' };
+    if (!m || !t0) return blank;
+    const st = m.store, t = t0, id = t.id, me = m.me(s), meA = m.agentById(me), icons = { Email: 'mail', LINE: 'chat', Phone: 'phone', Form: 'form' };
+    const v = m.slaView(t), cl = m.slaClocks(t);
+    const sla = { pct: v.pct, state: v.state, centre: v.centre, clock: v.clock, label: t.status === 'Resolved' ? 'Resolved' : v.label, due: m.dueLabel(t) };
+    const verifyBlock = t.verify && t.verify.level === 'High' && !t.verify.checks.every(Boolean);
+    const resolveOff = t.status === 'Resolved' || verifyBlock;
+    const NAMES = m.AGENTS.filter((a) => a.role !== 'Admin').map((a) => a.name), re = new RegExp('(@(?:' + NAMES.join('|') + ')\\b)');
+    const mkParts = (str) => str.split(re).filter(Boolean).map((p) => (p[0] === '@' && NAMES.includes(p.slice(1)) ? { t: p, style: 'background:#EDE9FE;color:#6D28D9;border-radius:6px;padding:0 6px;font-weight:600' } : { t: p, style: '' }));
+    const TY = { system: ['System', 'info', '#F1F5F9', '#475569'], rule: ['Rule Applied', 'zap', '#EDE9FE', '#6D28D9'], customer: ['Customer', 'user', '#F1F5F9', '#475569'], agent: ['Agent', 'user', '#DCFCE7', '#15803D'], note: ['Internal Note', 'lock', '#FEF3C7', '#92400E'], ai: ['AI Assistant', 'sparkle', '#DBEAFE', '#1D4ED8'], call: ['Call log', 'phone', '#F1F5F9', '#475569'] };
+    const lastAi = [...t.thread].reverse().find((e) => e.type === 'ai');
+    const events = [...t.thread].sort((a, b) => a.at - b.at).map((e) => { const d = TY[e.type], isAi = e.type === 'ai', live = isAi && e.state === 'pending' && lastAi && lastAi.id === e.id && !t.aiDismissed;
+      const label = e.type === 'customer' ? 'Customer · via ' + e.channel : e.type === 'agent' ? 'Agent · ' + m.agentById(e.by).name + ' · via ' + e.channel : e.type === 'note' ? 'Internal Note · ' + m.agentById(e.by).name : d[0];
+      const dur = e.duration || '0:00', playing = play.id === e.id;
+      return { label, icon: d[1], badge: d[2], fg: d[3], time: m.fmtStamp(e.at), parts: mkParts(e.text), isNote: e.type === 'note', isCall: e.type === 'call', callMeta: e.type === 'call' ? `${e.direction} · ${dur} · ${e.outcome}` : '', duration: dur,
+        bubble: e.type === 'note' ? 'background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:10px 12px;' : isAi ? 'background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;' : '',
+        aiLive: live, aiNote: isAi && e.state === 'accepted' ? 'Accepted and copied to the composer' : isAi && e.state === 'dismissed' ? 'Dismissed' : '', accept: () => { st.acceptAi(id); this.setState({ text: t.aiText, mode: 'reply' }); }, dismiss: () => st.dismissAi(id),
+        playIcon: playing ? 'pause' : 'play', pct: playing ? play.pct + '%' : '0%', toggle: () => this.togglePlay(e.id) }; });
+    const tabs = [['conv', 'Conversation'], ['time', 'Time & Activity']].map(([k, label]) => ({ label, fg: tab === k ? '#7C3AED' : '#64748B', line: tab === k ? '#7C3AED' : 'transparent', go: () => this.setState({ tab: k }) }));
+    const secs = Math.floor((timer.acc + (timer.running ? Date.now() - timer.start : 0)) / 1000), p2 = (n) => String(n).padStart(2, '0');
+    const entries = s.timeEntries.filter((e) => e.ticketId === id).map((e) => { const a = m.agentById(e.agent); return { ini: a.initials, color: a.color, name: a.name, note: e.note, date: e.date, minutes: e.minutes }; });
+    const tot = s.timeEntries.filter((e) => e.ticketId === id).reduce((n, e) => n + e.minutes, 0);
+    const activity = [...(t.activity || [])].sort((a, b) => a.at - b.at).map((a) => ({ text: a.text, by: a.by, time: m.fmtStamp(a.at) }));
+    const mention = mode === 'note' && /@(\w*)$/.exec(text);
+    const mentions = mention ? m.AGENTS.filter((a) => a.role !== 'Admin' && a.name.toLowerCase().startsWith(mention[1].toLowerCase())).map((a) => ({ name: a.name, ini: a.initials, color: a.color, pick: () => this.setState({ text: text.replace(/@\w*$/, '@' + a.name + ' ') }) })) : [];
+    const ctx = (str) => str.replace('{{Customer Name}}', t.requester).replace('{{Reference Number}}', t.loanRef);
+    const ins = (str) => this.setState({ text: text ? text + '\n' + str : str, macroOpen: false, artOpen: false, mode: mode });
+    const send = (after) => { if (!text.trim()) return; st.sendMessage(id, { text: text.trim(), mode, after }); this.setState({ text: '', sendMenu: false }); };
+    const chips = (text.match(re.source.replace(/^\(|\)$/g, '') && new RegExp('@(?:' + NAMES.join('|') + ')\\b', 'g')) || []);
+    const live = ['New', 'Open', 'Escalated'].includes(t.status);
+    const barOf = (c, name) => ({ name, left: c.done ? (c.state === 'done' && name === 'First response' ? 'Met in ' + m.fmtDur(c.used) : c.state === 'done' ? 'Done' : '') : c.state === 'paused' ? 'Paused' : c.left < 0 ? m.fmtDur(c.left) + ' over' : m.fmtDur(c.left) + ' left', w: (c.done ? 100 : c.pct) + '%', target: m.fmtDur(c.target), color: { ok: '#34C759', risk: '#FF9500', breached: '#FF3B30', paused: '#8E8E93', done: '#34C759' }[c.state] });
+    const agentsOpt = m.AGENTS.filter((a) => a.role === 'Agent' || a.role === 'Ops Leader').map((a) => ({ v: a.id, l: a.name }));
+    const vc = { Low: 'green', Medium: 'amber', High: 'red' };
+    const ca = t.csat, rel = (t.related || []).map((x) => s.tickets.find((o) => o.id === x)).filter(Boolean);
+    const tags = (t.tags || []);
+    return { ...blank, goBack: () => st.back(),
+      t: { id, priority: t.priority, status: t.status, subject: t.subject, chIcon: icons[t.channel], channel: t.channel, requester: t.requester, requesterRole: t.requesterRole, custTone: t.customerType === 'VIP' ? 'violet' : 'slate', customerType: t.customerType, phone: t.phone, email: t.email, loanRef: t.loanRef, team: t.team, created: m.fmtStamp(t.createdAt), updated: m.relTime(t.updatedAt) },
+      sla, collisionChip: t.collision ? m.agentById(t.collision.viewer).name + ' is viewing' : '', banner: collisionShow && t.collision ? m.agentById(t.collision.typer).name + ' is typing a reply' : '',
+      takeOver: () => { st.takeOver(id); this.setState({ collisionShow: false, collisionDone: true }); }, keepGoing: () => this.setState({ collisionShow: false, collisionDone: true }),
+      doResolve: () => { if (!resolveOff) st.resolve(id); }, resolveOff, resolveTip: verifyBlock ? 'Complete every verification check first' : t.status === 'Resolved' ? 'Already resolved' : 'Resolve ticket', resolveCursor: resolveOff ? 'not-allowed' : 'pointer', resolveOpacity: resolveOff ? 0.45 : 1,
+      openEsc: () => this.setState({ escOpen: true, escReason: '' }), doAlert: () => st.alertLead(id),
+      tabs, isConv: tab === 'conv', isTime: tab === 'time', events,
+      clock: `${p2(Math.floor(secs / 3600))}:${p2(Math.floor((secs % 3600) / 60))}:${p2(secs % 60)}`, startOp: timer.running ? 0.45 : 1,
+      timerStart: () => !timer.running && this.setState({ timer: { ...timer, running: true, start: Date.now() } }), timerPause: () => timer.running && this.setState({ timer: { running: false, acc: timer.acc + Date.now() - timer.start, start: 0 } }),
+      timerStop: () => { const total = timer.acc + (timer.running ? Date.now() - timer.start : 0); if (total >= 1000) { st.addTimeEntry({ ticketId: id, minutes: Math.max(1, Math.round(total / 60000)), note: 'Tracked time' }); st.toast('Time entry logged'); } this.setState({ timer: { running: false, acc: 0, start: 0 } }); },
+      autoStart, toggleAuto: () => st.setAutoTimer(!autoStart), mMin, mNote, mDate, setMMin: (e) => this.setState({ mMin: e.target.value }), setMNote: (e) => this.setState({ mNote: e.target.value }), setMDate: (e) => this.setState({ mDate: e.target.value }),
+      addManual: () => { const n = parseInt(mMin, 10); if (!n || n < 1) return st.toast('Enter minutes first'); st.addTimeEntry({ ticketId: id, minutes: n, note: mNote || 'Manual entry', date: mDate }); this.setState({ mMin: '', mNote: '' }); st.toast('Time entry added'); },
+      entries, totalTime: tot + ' min', activity,
+      aiCard: live && !t.aiDismissed, aiText: t.aiText, useAi: () => { st.acceptAi(id); this.setState({ text: t.aiText, mode: 'reply' }); }, dropAi: () => st.dismissAi(id),
+      modes: [['reply', 'Reply'], ['note', 'Internal note']].map(([k, label]) => ({ label, fg: mode === k ? '#7C3AED' : '#64748B', line: mode === k ? '#7C3AED' : 'transparent', go: () => this.setState({ mode: k, sendMenu: false }) })),
+      toggleMacro: () => this.setState({ macroOpen: !macroOpen, artOpen: false, macroQ: '' }), toggleArt: () => this.setState({ artOpen: !artOpen, macroOpen: false }),
+      macroOpen, macroQ, setMacroQ: (e) => this.setState({ macroQ: e.target.value }), macros: s.macros.filter((x) => x.title.toLowerCase().includes(macroQ.toLowerCase())).map((x) => ({ name: x.title, pick: () => { ins(ctx(x.body)); st.macroUse(x.id); } })),
+      artOpen, articles: s.kb.articles.filter((a) => a.status === 'Published' && a.audience === 'Public').map((a) => ({ name: a.title, pick: () => ins('Helpful article: ' + a.title + ' ' + m.kbLink(a)) })),
+      mentionOpen: mentions.length > 0, mentions, text, setText: (e) => this.setState({ text: e.target.value }), ph: mode === 'note' ? 'Add an internal note. Type @ to mention a teammate…' : 'Write a reply to ' + t.requester + '…',
+      taBorder: mode === 'note' ? '#FDE68A' : '#E2E8F0', taBg: mode === 'note' ? '#FFFBEB' : '#fff', chips: [...new Set(chips)],
+      send: () => send('none'), isReply: mode === 'reply', sendLabel: mode === 'note' ? 'Add Note' : 'Send', sendRadius: mode === 'note' ? '10px' : '10px 0 0 10px', sendOp: text.trim() ? 1 : 0.5,
+      toggleSendMenu: () => this.setState({ sendMenu: !sendMenu }), sendMenu: sendMenu && mode === 'reply', sendOpts: [['Send', 'none'], ['Send & set Pending', 'pending'], ['Send & Resolve', 'resolve']].map(([label, a]) => ({ label, go: () => send(a) })),
+      selects: this.withSel([{ label: 'Assignee', value: t.assignee || 'unassigned', opts: [{ v: 'unassigned', l: 'Unassigned' }, ...agentsOpt], change: (e) => st.updateTicket(id, { assignee: e.target.value === 'unassigned' ? null : e.target.value }) },
+        { label: 'Status', value: t.status, opts: m.STATUSES.map((x) => ({ v: x, l: x })), change: (e) => { if (e.target.value === 'Resolved') { if (!resolveOff) st.resolve(id); else st.toast('Complete verification first'); } else st.updateTicket(id, { status: e.target.value }); } },
+        { label: 'Priority', value: t.priority, opts: m.PRIORITIES.map((x) => ({ v: x, l: x })), change: (e) => st.updateTicket(id, { priority: e.target.value }) }]),
+      tags: tags.map((label) => ({ label, remove: () => st.setTags(id, tags.filter((x) => x !== label)) })), tagInput, setTagInput: (e) => this.setState({ tagInput: e.target.value }),
+      tagKey: (e) => { if (e.key === 'Enter' && tagInput.trim()) { const v2 = tagInput.trim().toLowerCase(); if (!tags.includes(v2)) st.setTags(id, [...tags, v2]); this.setState({ tagInput: '' }); } },
+      bars: [barOf(cl.fr, 'First response'), barOf(cl.res, 'Resolution'), ...(cl.vendor ? [{ name: 'Vendor wait', left: m.fmtDur(cl.vendor.left) + ' left', w: '100%', target: m.fmtDur(cl.vendor.target), color: '#34C759' }] : [])],
+      hasVerify: !!t.verify, vTone: t.verify ? vc[t.verify.level] : 'slate', vLevel: t.verify ? t.verify.level : '', checks: t.verify ? m.VERIFY_ITEMS.map((label, i) => ({ label, on: t.verify.checks[i], toggle: () => st.toggleVerify(id, i) })) : [], vWarn: !!verifyBlock,
+      hasCsat: t.status === 'Resolved' && !!ca, stars: [1, 2, 3, 4, 5].map((n) => ({ color: ca && !ca.pending && n <= ca.stars ? '#FF9500' : '#CBD5E1' })), csatText: ca ? (ca.pending ? 'Survey sent. Awaiting customer response.' : '“' + ca.comment + '”') : '', csatDate: ca && ca.at ? m.fmtStamp(ca.at) : '',
+      related: rel.map((o) => ({ id: o.id, status: o.status, subject: o.subject, go: () => st.openTicket(o.id) })),
+      escOpen, closeEsc: () => this.setState({ escOpen: false }), stop: (e) => e.stopPropagation(), escTarget, setEscTarget: (e) => this.setState({ escTarget: e.target.value }), targets: Object.keys(m.ESCALATION_TARGETS), escReason, setEscReason: (e) => this.setState({ escReason: e.target.value }),
+      doEscalate: () => { st.escalate(id, { reason: escReason, target: escTarget }); this.setState({ escOpen: false }); },
+      toast: !!s.toast, toastText: s.toast ? s.toast.text : '' };
+  }
+  withSel(arr) { return arr.map((f) => ({ ...f, cur: (f.opts.find((o) => o.v === f.value) || { l: '' }).l, opts: f.opts.map((o) => ({ ...o, sel: o.v === f.value })) })); }
+  togglePlay(eid) {
+    clearInterval(this.pv);
+    if (this.state.play.id === eid) return this.setState({ play: { id: null, pct: 0 } });
+    this.setState({ play: { id: eid, pct: 0 } });
+    this.pv = setInterval(() => { const p = this.state.play; if (p.id !== eid) return clearInterval(this.pv); if (p.pct >= 100) { clearInterval(this.pv); return this.setState({ play: { id: null, pct: 0 } }); } this.setState({ play: { id: eid, pct: p.pct + 4 } }); }, 400);
+  }
+}
+</script>
+</body>
+</html>

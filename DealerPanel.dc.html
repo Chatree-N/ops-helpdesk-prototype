@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdSlide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}</style></helmet>
+<sc-if value="{{ panel }}" hint-placeholder-val="{{ false }}">
+  <aside style="position:absolute;top:0;right:0;bottom:0;width:420px;z-index:25;background:#fff;border-left:1px solid #E2E8F0;box-shadow:0 8px 32px rgba(15,18,32,.12);display:flex;flex-direction:column;animation:mdSlide 200ms ease;min-height:0;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+    <div style="padding:16px 24px 8px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#64748B">{{ p.id }}</span><dc-import name="Pill" kind="tone" value="violet" label="{{ p.stageLabel }}" hint-size="120px,20px"></dc-import><dc-import name="Pill" kind="tone" value="{{ p.statusTone }}" label="{{ p.status }}" hint-size="64px,20px"></dc-import><button onClick="{{ closePanel }}" aria-label="Close" style="margin-left:auto;width:32px;height:32px;border:0;background:none;color:#64748B;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center" style-hover="background:#F1F5F9"><dc-import name="Icon" icon="x" size="18" hint-size="18px,18px"></dc-import></button></div>
+      <div style="font:600 18px/24px var(--font);text-wrap:pretty">{{ p.name }}</div>
+      <div style="font:400 12px/16px var(--font);color:#64748B">{{ p.place }} · {{ p.contact }}</div>
+    </div>
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 24px 16px;display:flex;flex-direction:column;gap:16px">
+      <div style="background:#F8FAFC;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <dc-import name="SlaRing" size="44" pct="{{ p.pct }}" state="{{ p.state }}" centre="{{ p.centre }}" hint-size="44px,44px"></dc-import>
+        <div style="flex:1;min-width:0"><div style="font:700 14px/20px var(--font)">{{ p.label }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ p.due }}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <sc-for list="{{ selects }}" as="f" hint-placeholder-count="2">
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">{{ f.label }}
+            <span style="position:relative;display:block;height:36px;letter-spacing:0"><span style="height:36px;box-sizing:border-box;border:1px solid #E2E8F0;border-radius:10px;background:#fff;padding:0 8px;font:500 13px/20px var(--font);color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:4px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.cur }}</span><dc-import name="Icon" icon="chevdown" size="14" color="#64748B" hint-size="14px,14px"></dc-import></span><select onChange="{{ f.change }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></span></label>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ facts }}" as="x" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;font:500 13px/20px var(--font);color:#475569"><span style="width:110px;color:#64748B">{{ x.k }}</span><dc-import name="Pill" kind="tone" value="{{ x.tone }}" label="{{ x.v }}" hint-size="90px,20px"></dc-import></div></sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B;margin-bottom:4px">LATEST ACTIVITY</div>
+        <sc-for list="{{ msgs }}" as="e" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid #F1F5F9"><span style="font:400 12px/16px var(--font);color:#64748B">{{ e.time }} · {{ e.by }}</span><span style="font:400 14px/20px var(--font);color:#334155;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ e.text }}</span></div></sc-for>
+      </div>
+    </div>
+    <div style="border-top:1px solid #E2E8F0;padding:12px 24px;display:flex;justify-content:flex-end"><button onClick="{{ openDealer }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 14px/20px var(--font);cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#6D28D9">Open dealer<dc-import name="Icon" icon="chevron" size="16" stroke="1.75" hint-size="16px,16px"></dc-import></button></div>
+  </aside>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, tick: 0 };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); this.iv = setInterval(() => this.setState((x) => ({ tick: x.tick + 1 })), 1000);
+    this.esc = (e) => { const mm = this.state.m; if (e.key === 'Escape' && mm && mm.store.get().selectedId) mm.store.select(null); }; window.addEventListener('keydown', this.esc); }
+  componentWillUnmount() { this.unsub && this.unsub(); clearInterval(this.iv); window.removeEventListener('keydown', this.esc); }
+  renderVals() {
+    const { m, s } = this.state, nop = () => {};
+    const blank = { panel: false, p: { id: '', stageLabel: '', statusTone: 'slate', status: '', name: '', place: '', contact: '', pct: 100, state: 'ok', centre: '', label: '', due: '' }, closePanel: nop, selects: [], facts: [], msgs: [], openDealer: nop };
+    if (!m || !s) return blank;
+    const d = s.selectedId && s.dealers.find((x) => x.id === s.selectedId); if (!d) return blank;
+    const st = m.store, v = m.dealerView(d), k = m.kymOverall(d), par = m.idParity(d), vend = m.openVendorReqs(d, s);
+    const agents = m.AGENTS.filter((a) => a.role === 'Agent' || a.role === 'Ops Leader');
+    const sel = (arr) => arr.map((f) => ({ ...f, cur: (f.opts.find((o) => o.v === f.value) || { l: '' }).l, opts: f.opts.map((o) => ({ ...o, sel: o.v === f.value })) }));
+    return { panel: true, closePanel: () => st.select(null), openDealer: () => st.openDealer(d.id),
+      p: { id: d.id, stageLabel: 'Stage ' + d.stage + ' · ' + m.STAGES[d.stage], status: v.status, statusTone: { 'On track': 'blue', 'At risk': 'amber', Overdue: 'red', Done: 'green' }[v.status], name: d.name, place: d.branch + ', ' + d.region, contact: d.contact.name, pct: v.pct, state: v.state, centre: v.centre,
+        label: v.state === 'done' ? 'Onboarded' : 'Stage ' + d.stage + ': ' + v.label, due: v.state === 'done' ? 'Completed ' + m.fmtStamp(d.doneAt) : 'Due ' + m.fmtStamp(v.due) },
+      selects: sel([{ label: 'STAGE', value: String(d.stage), opts: m.STAGES.map((x, i) => ({ v: String(i), l: i + ' · ' + x })), change: (e) => { const r = st.moveDealer(d.id, +e.target.value); if (!r.ok) st.toast(r.reason); } },
+        { label: 'OWNER', value: d.owner, opts: agents.map((a) => ({ v: a.id, l: a.name })), change: (e) => st.setDealerOwner(d.id, e.target.value) }]),
+      facts: [{ k: 'KYM result', v: k, tone: { Approved: 'green', Review: 'amber', Rejected: 'red', Pending: 'slate' }[k] }, { k: 'LMS / Portal IDs', v: { match: 'Match', mismatch: 'Mismatch', missing: 'Not set' }[par], tone: { match: 'green', mismatch: 'red', missing: 'slate' }[par] },
+        { k: 'Training', v: d.training ? m.fmtStamp(d.training) : 'Not set', tone: d.training ? 'green' : 'slate' }, { k: 'Vendor requests', v: vend.length ? vend.length + ' open' : 'None open', tone: vend.length ? 'amber' : 'slate' }],
+      msgs: [...d.events].sort((a, b) => b.at - a.at).slice(0, 3).map((e) => ({ time: m.fmtStamp(e.at), by: e.by, text: e.text })) };
+  }
+}
+</script>
+</body>
+</html>

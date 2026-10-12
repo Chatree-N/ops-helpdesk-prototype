@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes mdUp{from{transform:translate(-50%,12px);opacity:0}to{transform:translate(-50%,0);opacity:1}}</style></helmet>
+<div style="position:relative;height:100%;overflow-y:auto;background:#F8FAFC;font-family:var(--font,-apple-system,Inter,sans-serif);color:#0F172A">
+<div style="padding:16px 32px 40px;display:flex;flex-direction:column;gap:16px;max-width:1280px;margin:0 auto;box-sizing:border-box">
+  <button onClick="{{ goBack }}" style="align-self:flex-start;border:0;background:none;padding:4px 0;color:#7C3AED;font:600 13px/20px var(--font);cursor:pointer;display:flex;align-items:center;gap:4px" style-hover="color:#6D28D9"><dc-import name="Icon" icon="back" size="16" stroke="1.75" hint-size="16px,16px"></dc-import>Back to board</button>
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font:700 12px/16px var(--mono);color:#64748B">{{ h.id }}</span><dc-import name="Pill" kind="tone" value="violet" label="{{ h.stage }}" hint-size="140px,20px"></dc-import><dc-import name="Pill" kind="tone" value="{{ h.tone }}" label="{{ h.status }}" hint-size="64px,20px"></dc-import></div>
+      <div style="font:600 20px/28px var(--font);letter-spacing:-.2px">{{ h.name }}</div>
+      <div style="font:400 13px/20px var(--font);color:#64748B">{{ h.place }} · {{ h.contact }} · {{ h.phone }} · {{ h.email }}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 1px 2px rgba(15,18,32,.05)"><dc-import name="SlaRing" size="48" pct="{{ h.pct }}" state="{{ h.state }}" centre="{{ h.centre }}" hint-size="48px,48px"></dc-import><div><div style="font:700 14px/20px var(--font)">{{ h.label }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ h.due }}</div></div></div>
+    <label style="display:flex;flex-direction:column;gap:4px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">MOVE TO STAGE
+      <span style="position:relative;display:block;width:220px;height:36px;letter-spacing:0"><span style="height:36px;box-sizing:border-box;border:1px solid #E2E8F0;border-radius:10px;background:#fff;padding:0 10px;font:500 13px/20px var(--font);color:#0F172A;display:flex;align-items:center;justify-content:space-between"><span>{{ h.stageCur }}</span><dc-import name="Icon" icon="chevdown" size="14" color="#64748B" hint-size="14px,14px"></dc-import></span><select onChange="{{ moveStage }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"><sc-for list="{{ stageOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}" selected="{{ o.sel }}">{{ o.l }}</option></sc-for></select></span></label>
+  </div>
+  <sc-if value="{{ blockMsg }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:10px 16px;font:600 13px/20px var(--font);color:#B91C1C"><dc-import name="Icon" icon="alert" size="16" hint-size="16px,16px"></dc-import>{{ blockMsg }}</div></sc-if>
+  <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;gap:8px">
+    <sc-for list="{{ steps }}" as="t" hint-placeholder-count="5"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px"><span style="width:24px;height:24px;border-radius:50%;background:{{ t.bg }};color:{{ t.fg }};display:inline-flex;align-items:center;justify-content:center;font:700 12px/1 var(--font);flex:none">{{ t.n }}</span><span style="height:2px;flex:1;background:{{ t.line }};border-radius:1px"></span></div><div style="font:600 13px/20px var(--font);color:{{ t.tc }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.label }}</div><div style="font:400 12px/16px var(--font);color:#64748B">{{ t.day }}</div></div></sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font:600 14px/20px var(--font)">KYM scorecard</span><span style="margin-left:auto"><dc-import name="Pill" kind="tone" value="{{ kymTone }}" label="{{ kymOverall }}" hint-size="80px,20px"></dc-import></span></div>
+        <sc-for list="{{ checks }}" as="c" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:8px;padding:6px 0;min-height:56px;box-sizing:border-box;border-bottom:1px solid #F8FAFC"><span style="flex:1;font:500 13px/20px var(--font);color:#334155">{{ c.label }}</span><div style="display:flex;background:#F1F5F9;border-radius:10px;padding:2px;gap:2px"><sc-for list="{{ c.opts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.go }}" style="height:26px;padding:0 10px;border:0;border-radius:8px;cursor:pointer;font:600 12px/16px var(--font);background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.l }}</button></sc-for></div></div></sc-for>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font:600 14px/20px var(--font)">LMS and Portal IDs</span><span style="margin-left:auto"><dc-import name="Pill" kind="tone" value="{{ parTone }}" label="{{ parLabel }}" hint-size="80px,20px"></dc-import></span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">LMS ID<input value="{{ lms }}" onChange="{{ setLms }}" placeholder="LMS-00000" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:500 13px/20px var(--mono);outline:0;letter-spacing:0;width:100%;box-sizing:border-box"></label>
+          <label style="display:flex;flex-direction:column;gap:4px;font:600 11px/16px var(--font);letter-spacing:.06em;color:#64748B">PORTAL ID<input value="{{ portal }}" onChange="{{ setPortal }}" placeholder="PRT-00000" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:500 13px/20px var(--mono);outline:0;letter-spacing:0;width:100%;box-sizing:border-box"></label>
+          <button onClick="{{ saveIds }}" style="height:36px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer">Save</button>
+        </div>
+        <div style="font:400 12px/16px var(--font);color:#64748B">Both IDs must be set and carry the same number before Stage 3.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:10px">
+        <span style="font:600 14px/20px var(--font)">Training appointment</span>
+        <div style="display:flex;gap:8px;align-items:center"><input type="datetime-local" value="{{ training }}" onChange="{{ setTraining }}" style="height:36px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:500 13px/20px var(--font);outline:0;flex:1;min-width:0"><button onClick="{{ clearTraining }}" style="height:36px;padding:0 14px;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;font:600 13px/20px var(--font);cursor:pointer">Clear</button></div>
+        <div style="font:400 12px/16px var(--font);color:#64748B">{{ trainingNote }}</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:10px">
+        <span style="font:600 14px/20px var(--font)">Vendor requests (LockSure)</span>
+        <sc-if value="{{ noVendor }}" hint-placeholder-val="{{ true }}"><div style="font:400 13px/20px var(--font);color:#64748B">No requests for this dealer.</div></sc-if>
+        <sc-for list="{{ vendor }}" as="q" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #F8FAFC"><dc-import name="Pill" kind="tone" value="{{ q.tone }}" label="{{ q.type }}" hint-size="60px,20px"></dc-import><span style="flex:1;min-width:0;font:500 13px/20px var(--font)"><span style="font-family:var(--mono);font-weight:700;color:#64748B">{{ q.id }}</span> · {{ q.device }}</span><span style="font:600 12px/16px var(--font);color:{{ q.color }};font-variant-numeric:tabular-nums;white-space:nowrap">{{ q.text }}</span><sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}"><button onClick="{{ q.confirm }}" style="height:28px;padding:0 10px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;color:#334155;font:600 12px/16px var(--font);cursor:pointer">Mark confirmed</button></sc-if></div></sc-for>
+        <div style="display:flex;gap:8px;align-items:center"><div style="display:flex;background:#F1F5F9;border-radius:10px;padding:2px;gap:2px"><sc-for list="{{ vtypes }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="height:26px;padding:0 12px;border:0;border-radius:8px;cursor:pointer;font:600 12px/16px var(--font);background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.sh }}">{{ t.l }}</button></sc-for></div><input value="{{ vdevice }}" onChange="{{ setVdevice }}" placeholder="Device ref, e.g. DEV-7801" style="height:32px;border:1px solid #E2E8F0;border-radius:10px;padding:0 10px;font:400 13px/20px var(--font);outline:0;flex:1;min-width:0"><button onClick="{{ sendVendor }}" style="height:32px;padding:0 14px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer;white-space:nowrap">Create request</button></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:12px">
+        <span style="font:600 14px/20px var(--font)">Emails</span>
+        <sc-for list="{{ emails }}" as="e" hint-placeholder-count="2">
+          <div style="border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font:600 13px/20px var(--font)">{{ e.title }}</span><sc-if value="{{ e.sent }}" hint-placeholder-val="{{ false }}"><dc-import name="Pill" kind="tone" value="green" label="{{ e.sentLabel }}" hint-size="120px,20px"></dc-import></sc-if><button onClick="{{ e.send }}" disabled="{{ e.off }}" title="{{ e.tip }}" style="margin-left:auto;height:28px;padding:0 12px;border:0;border-radius:8px;background:#7C3AED;color:#fff;font:600 12px/16px var(--font);cursor:{{ e.cursor }};opacity:{{ e.op }}">Send</button></div>
+            <div style="font:500 12px/16px var(--font);color:#64748B">To: {{ e.to }}</div><div style="font:500 12px/16px var(--font);color:#64748B">CC: {{ e.cc }}</div>
+            <div style="font:600 13px/20px var(--font)">{{ e.subject }}</div>
+            <div style="font:400 13px/20px var(--font);color:#334155;white-space:pre-line;background:#F8FAFC;border-radius:10px;padding:10px 12px">{{ e.body }}</div>
+            <sc-if value="{{ e.off }}" hint-placeholder-val="{{ false }}"><div style="font:600 12px/16px var(--font);color:#B45309">{{ e.tip }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 2px rgba(15,18,32,.05);display:flex;flex-direction:column;gap:8px">
+        <span style="font:600 14px/20px var(--font)">Activity</span>
+        <sc-for list="{{ events }}" as="e" hint-placeholder-count="4"><div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #F8FAFC"><span style="width:28px;height:28px;border-radius:50%;background:{{ e.bg }};color:{{ e.fg }};display:inline-flex;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{ e.icon }}" size="14" hint-size="14px,14px"></dc-import></span><div style="flex:1;min-width:0"><div style="font:400 12px/16px var(--font);color:#64748B">{{ e.label }} · {{ e.time }}</div><div style="font:400 13px/20px var(--font);color:#334155;text-wrap:pretty;{{ e.style }}">{{ e.text }}</div></div></div></sc-for>
+        <textarea value="{{ note }}" onChange="{{ setNote }}" placeholder="Add an internal note…" style="height:64px;resize:none;border:1px solid #FDE68A;background:#FFFBEB;border-radius:12px;padding:10px 12px;font:400 14px/20px var(--font);outline:0;box-sizing:border-box;width:100%"></textarea>
+        <div style="display:flex;justify-content:flex-end"><button onClick="{{ addNote }}" style="height:32px;padding:0 16px;border:0;border-radius:10px;background:#7C3AED;color:#fff;font:600 13px/20px var(--font);cursor:pointer">Add note</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/20px var(--font);animation:mdUp 200ms ease;white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;display:inline-flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="12" stroke="2.5" hint-size="12px,12px"></dc-import></span>{{ toastText }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { m: null, s: null, tick: 0, ids: null, note: '', vtype: 'Lock', vdevice: '', block: '' };
+  componentDidMount() { import('./store.js').then((m) => { this.unsub = m.store.subscribe((s) => this.setState({ s })); this.setState({ m, s: m.store.get() }); }); this.iv = setInterval(() => this.setState((x) => ({ tick: x.tick + 1 })), 1000); }
+  componentWillUnmount() { this.unsub && this.unsub(); clearInterval(this.iv); }
+  renderVals() {
+    const { m, s, ids, note, vtype, vdevice, block } = this.state, nop = () => {};
+    const blank = { goBack: nop, h: { id: '', stage: '', status: '', tone: 'slate', name: '', place: '', contact: '', phone: '', email: '', pct: 100, state: 'ok', centre: '', label: '', due: '', stageCur: '' }, moveStage: nop, stageOpts: [], blockMsg: '', steps: [], kymTone: 'slate', kymOverall: '', checks: [], parTone: 'slate', parLabel: '', lms: '', portal: '', setLms: nop, setPortal: nop, saveIds: nop, training: '', setTraining: nop, clearTraining: nop, trainingNote: '', noVendor: true, vendor: [], vtypes: [], vdevice: '', setVdevice: nop, sendVendor: nop, emails: [], events: [], note: '', setNote: nop, addNote: nop, toast: false, toastText: '' };
+    if (!m || !s) return blank;
+    const d = s.dealers.find((x) => x.id === s.dealerId); if (!d) return blank;
+    const st = m.store, v = m.dealerView(d), k = m.kymOverall(d), par = m.idParity(d), id = d.id, a = m.agentById(d.owner);
+    const draft = ids && ids.id === id ? ids : { id, lms: d.lmsId || '', portal: d.portalId || '' };
+    const d1 = m.bizAfter(d.createdAt, m.DAY_MIN), d2 = m.bizAfter(d.createdAt, m.DAY_MIN * 2);
+    const fill = (t) => t.replace(/\{\{Dealer Name\}\}/g, d.name).replace(/\{\{Reference Number\}\}/g, d.id).replace(/\{\{Contact Name\}\}/g, d.contact.name);
+    const cc = d.salesOwner + ' <' + m.salesEmail(d) + '>';
+    const kick = { title: 'Kickoff email', subject: fill('Welcome to Meridian Lending: next steps for {{Dealer Name}} ({{Reference Number}})'),
+      body: fill('Dear {{Contact Name}},\n\nWelcome to Meridian Lending. Your onboarding reference is {{Reference Number}} for {{Dealer Name}}.\n\nYour accounts are ready:\n• LMS ID: ' + (d.lmsId || 'pending') + '\n• Portal ID: ' + (d.portalId || 'pending') + '\n\nWe will confirm your training session shortly.\n\nMeridian Lending Dealer Onboarding'), sentAt: d.kickoffSentAt, off: false, tip: '' };
+    const tr = d.training ? m.fmtStamp(d.training) : null;
+    const succ = { title: 'Success email', subject: fill('You are live: {{Dealer Name}} ({{Reference Number}})'),
+      body: fill('Dear {{Contact Name}},\n\nCongratulations. {{Dealer Name}} ({{Reference Number}}) is onboarded with Meridian Lending.\n\nYour training session is on ' + (tr || '[date and time not set]') + '.\n\nYour sales contact ' + d.salesOwner + ' is copied on this email.\n\nMeridian Lending Dealer Onboarding'), sentAt: d.successSentAt, off: !d.training, tip: 'Set a training appointment to enable this email.' };
+    const emails = [kick, succ].map((e, i) => ({ title: e.title, to: d.contact.name + ' <' + d.contact.email + '>', cc, subject: e.subject, body: e.body, sent: !!e.sentAt, sentLabel: e.sentAt ? 'Sent ' + m.fmtStamp(e.sentAt) : '', off: e.off, tip: e.tip, cursor: e.off ? 'not-allowed' : 'pointer', op: e.off ? 0.45 : 1, send: () => { if (!e.off) st.sendEmail(id, i === 0 ? 'kickoff' : 'success'); } }));
+    const KC = { Pass: ['#34C759', '#fff'], Fail: ['#FF3B30', '#fff'], Pending: ['#fff', '#475569'] };
+    const checks = m.KYM_CHECKS.map((label, i) => ({ label, opts: ['Pass', 'Fail', 'Pending'].map((o) => ({ l: o, bg: d.kym[i] === o ? KC[o][0] : 'transparent', fg: d.kym[i] === o ? KC[o][1] : '#64748B', sh: d.kym[i] === o ? '0 1px 2px rgba(15,23,42,.12)' : 'none', go: () => st.setKym(id, i, o) })) }));
+    const TY = { system: ['System', 'info', '#F1F5F9', '#475569'], note: ['Internal note', 'lock', '#FEF3C7', '#92400E'], email: ['Email', 'mail', '#DBEAFE', '#1D4ED8'] };
+    const vq = s.vendorReqs.filter((q) => q.dealerId === id).map((q) => { const vl = m.vendorLeft(q), open = q.status !== 'Confirmed'; return { id: q.id, type: q.type, tone: q.type === 'Lock' ? 'violet' : 'blue', device: q.deviceRef, open, confirm: () => st.confirmVendorReq(q.id), color: open ? { ok: '#15803D', risk: '#C2410C', breached: '#B91C1C' }[vl.state] : '#15803D', text: open ? (vl.left < 0 ? m.fmtClock(vl.left) + ' over' : m.fmtClock(vl.left) + ' left') : 'Confirmed' }; });
+    const TC = ['violet'];
+    return { ...blank, goBack: () => st.setRoute('kanban'), toast: !!s.toast, toastText: s.toast ? s.toast.text : '',
+      h: { id, stage: 'Stage ' + d.stage + ' · ' + m.STAGES[d.stage], status: v.status, tone: { 'On track': 'blue', 'At risk': 'amber', Overdue: 'red', Done: 'green' }[v.status], name: d.name, place: d.branch + ', ' + d.region, contact: d.contact.name, phone: d.contact.phone, email: d.contact.email, pct: v.pct, state: v.state, centre: v.centre, label: v.state === 'done' ? 'Onboarded' : v.label, due: v.state === 'done' ? 'Completed ' + m.fmtStamp(d.doneAt) : 'Due ' + m.fmtStamp(v.due), stageCur: d.stage + ' · ' + m.STAGES[d.stage] },
+      stageOpts: m.STAGES.map((x, i) => ({ v: String(i), l: i + ' · ' + x, sel: d.stage === i })), moveStage: (e) => { const r = st.moveDealer(id, +e.target.value); this.setState({ block: r.ok ? '' : r.reason }); if (!r.ok) st.toast(r.reason); }, blockMsg: block,
+      steps: m.STAGES.map((label, i) => ({ n: i < d.stage || d.stage === 4 ? '✓' : String(i), bg: i < d.stage || d.stage === 4 ? '#34C759' : i === d.stage ? '#7C3AED' : '#E2E8F0', fg: i <= d.stage ? '#fff' : '#64748B', line: i < d.stage ? '#34C759' : '#E2E8F0', tc: i === d.stage ? '#0F172A' : '#64748B', label, day: i <= 2 ? 'Day 1 · due ' + m.fmtStamp(d1) : 'Day 2 · due ' + m.fmtStamp(d2) })),
+      kymTone: { Approved: 'green', Review: 'amber', Rejected: 'red', Pending: 'slate' }[k], kymOverall: k, checks,
+      parTone: { match: 'green', mismatch: 'red', missing: 'slate' }[par], parLabel: { match: 'IDs match', mismatch: 'ID mismatch', missing: 'Not set' }[par], lms: draft.lms, portal: draft.portal,
+      setLms: (e) => this.setState({ ids: { ...draft, lms: e.target.value } }), setPortal: (e) => this.setState({ ids: { ...draft, portal: e.target.value } }), saveIds: () => { st.setIds(id, draft.lms, draft.portal); this.setState({ ids: null }); st.toast('IDs saved'); },
+      training: m.toLocalInput(d.training), setTraining: (e) => st.setTraining(id, e.target.value), clearTraining: () => st.setTraining(id, ''), trainingNote: d.training ? 'Booked for ' + m.fmtStamp(d.training) + '. Required before Stage 4.' : 'Not set. Required before Stage 4 and before the Success email can be sent.',
+      noVendor: vq.length === 0, vendor: vq, vtypes: ['Lock', 'Unlock'].map((l) => ({ l, bg: vtype === l ? '#fff' : 'transparent', fg: vtype === l ? '#7C3AED' : '#64748B', sh: vtype === l ? '0 1px 2px rgba(15,23,42,.12)' : 'none', go: () => this.setState({ vtype: l }) })), vdevice, setVdevice: (e) => this.setState({ vdevice: e.target.value }),
+      sendVendor: () => { st.createVendorReq(id, { type: vtype, deviceRef: vdevice.trim() }); this.setState({ vdevice: '' }); },
+      emails, events: [...d.events].sort((x, y) => y.at - x.at).map((e) => { const t = TY[e.type] || TY.system; return { icon: t[1], bg: t[2], fg: t[3], label: t[0] + (e.by && e.by !== 'System' ? ' · ' + e.by : ''), time: m.fmtStamp(e.at), text: e.text, style: e.type === 'note' ? 'background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:8px 10px;' : '' }; }),
+      note, setNote: (e) => this.setState({ note: e.target.value }), addNote: () => { if (!note.trim()) return; st.addDealerNote(id, note.trim()); this.setState({ note: '' }); } };
+  }
+}
+</script>
+</body>
+</html>
